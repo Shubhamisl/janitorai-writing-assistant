@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+*.swp
+*.swo
+*~
+.env
+.env.local
+web-ext-artifacts/
+*.zip
+.vscode/
+.idea/

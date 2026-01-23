@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JanitorAI Writer</title>
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h2>Writing Assistant</h2>
+      <div class="status-indicator online" title="Ready"></div>
+    </header>
+
+    <div class="input-section">
+      <label for="input-text">Your Draft</label>
+      <textarea id="input-text" placeholder="Type here or text will appear from chat..."></textarea>
+    </div>
+
+    <!-- NEW: Suggestions Section -->
+    <div class="suggestions-section">
+      <div class="section-header">
+        <label>Quick Suggestions</label>
+        <button id="suggest-btn" class="icon-btn-small" title="Get Ideas">💡</button>
+      </div>
+      <div id="suggestion-chips" class="chips-container">
+        <!-- Chips will be injected here -->
+        <span class="placeholder-text">Click 💡 to brainstorm next moves.</span>
+      </div>
+    </div>
+
+    <div class="controls-section">
+      <label for="style-select">Enhancement Style</label>
+      <select id="style-select">
+        <option value="roleplay">🎭 Roleplay (Immersive)</option>
+        <option value="novel">📖 Novel (Descriptive)</option>
+        <option value="casual">💬 Casual (Natural)</option>
+      </select>
+
+      <div class="model-info">
+        <small id="model-display">Claude 3.5 Sonnet</small>
+      </div>
+
+      <button id="enhance-btn" class="primary-btn">
+        <span class="icon">✨</span> Enhance Text
+      </button>
+    </div>
+
+    <div class="output-section hidden" id="output-section">
+      <div class="output-header">
+        <label>Suggestion</label>
+        <div class="actions">
+          <button id="copy-btn" class="icon-btn" title="Copy to Clipboard">📋</button>
+        </div>
+      </div>
+      <div id="output-text" class="output-box" contenteditable="true"></div>
+
+      <button id="apply-btn" class="secondary-btn">
+        <span class="icon">⏎</span> Insert to Chat
+      </button>
+    </div>
+
+    <div id="error-message" class="error-box hidden"></div>
+  </div>
+  <script src="sidebar.js"></script>
+</body>
+
+</html>
