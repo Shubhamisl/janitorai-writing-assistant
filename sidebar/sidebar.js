@@ -1,5 +1,5 @@
 // Sidebar logic
-const browser = window.browser || window.chrome;
+const browser = globalThis.browser ?? globalThis.chrome;
 
 const elements = {
     inputText: document.getElementById('input-text'),

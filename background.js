@@ -1,5 +1,5 @@
 // Background script for handling API calls and state
-const browser = window.browser || window.chrome;
+const browser = globalThis.browser ?? globalThis.chrome;
 
 // Edge/Chrome: Open side panel on icon click
 if (typeof chrome !== "undefined" && chrome.sidePanel) {

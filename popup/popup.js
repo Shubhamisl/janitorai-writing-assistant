@@ -1,5 +1,5 @@
 // Settings popup logic
-const browser = window.browser || window.chrome;
+const browser = globalThis.browser ?? globalThis.chrome;
 
 const elements = {
     apiKey: document.getElementById('api-key'),
@@ -14,13 +14,14 @@ elements.openSidebarBtn.addEventListener('click', async () => {
     try {
         const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
         if (tab) {
-            // chrome.sidePanel.open is only available in Chrome 116+
-            // In Firefox it might be different, but manifest v3 sidePanel is mainly Chrome
-            if (browser.sidePanel && browser.sidePanel.open) {
+            if (browser.sidePanel?.open) {
+                // Chrome / Edge 116+
                 await browser.sidePanel.open({ tabId: tab.id });
+            } else if (browser.sidebarAction?.open) {
+                // Firefox
+                await browser.sidebarAction.open();
             } else {
-                // Fallback or message if not supported
-                showStatus("Sidebar API not supported", false);
+                showStatus("Click the toolbar icon to open the sidebar", false);
             }
         }
     } catch (err) {
