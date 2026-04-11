@@ -78,6 +78,7 @@ header h2 {
   letter-spacing: -0.01em;
   background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
