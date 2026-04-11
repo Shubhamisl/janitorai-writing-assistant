@@ -12,14 +12,15 @@
   "side_panel": {
     "default_path": "sidebar/sidebar.html"
   },
+  "sidebar_action": {
+    "default_panel": "sidebar/sidebar.html"
+  },
   "host_permissions": [
     "*://janitorai.com/*"
   ],
   "background": {
     "service_worker": "background.js",
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
@@ -32,11 +33,6 @@
       "run_at": "document_idle"
     }
   ],
-  "sidebar_action": {
-    "default_title": "Writing Assistant",
-    "default_panel": "sidebar/sidebar.html",
-    "default_icon": "icons/icon-48.png"
-  },
   "action": {
     "default_icon": "icons/icon-48.png",
     "default_title": "Open Writing Assistant"
