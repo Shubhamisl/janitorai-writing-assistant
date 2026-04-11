@@ -1,5 +1,3 @@
-import { getChatHistory, insertText } from './utils/scraping.js';
-
 // Content script for detecting chat interface
 const browser = globalThis.browser ?? globalThis.chrome;
 

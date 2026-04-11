@@ -1,6 +1,6 @@
 // Reusable scraping logic for content scripts
 
-export const SELECTORS = {
+const SELECTORS = {
     // The main chat textarea
     chatInput: [
         'textarea[class*="_chatTextarea_"]',
@@ -21,7 +21,7 @@ export const SELECTORS = {
     messageBody: 'div[class*="_messageBody_"]'
 };
 
-export function findChatInput() {
+function findChatInput() {
     for (const selector of SELECTORS.chatInput) {
         const el = document.querySelector(selector);
         if (el) return el;
@@ -29,7 +29,7 @@ export function findChatInput() {
     return null;
 }
 
-export function getChatHistory(limit = 10) {
+function getChatHistory(limit = 10) {
     const history = [];
 
     const messageItems = document.querySelectorAll(SELECTORS.messageItem);
@@ -62,7 +62,7 @@ export function getChatHistory(limit = 10) {
 }
 
 // React-compatible textarea value setter
-export function setNativeValue(textarea, value) {
+function setNativeValue(textarea, value) {
     const setter = Object.getOwnPropertyDescriptor(
         HTMLTextAreaElement.prototype, 'value'
     ).set;
@@ -70,7 +70,7 @@ export function setNativeValue(textarea, value) {
     textarea.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-export function insertText(text) {
+function insertText(text) {
     const input = findChatInput();
     if (!input) {
         console.warn("JanitorAI Writing Assistant: chat textarea not found");

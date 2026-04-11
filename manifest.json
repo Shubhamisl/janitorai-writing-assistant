@@ -20,6 +20,7 @@
   ],
   "background": {
     "service_worker": "background.js",
+    "type": "module",
     "scripts": [
       "background.js"
     ]
@@ -30,6 +31,7 @@
         "*://janitorai.com/*"
       ],
       "js": [
+        "utils/scraping.js",
         "content.js"
       ],
       "run_at": "document_idle"
