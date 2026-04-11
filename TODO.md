@@ -7,9 +7,7 @@ These are the suggested improvements focused on robustness, user experience, and
 - [ ] **Advanced Error Handling**: Handle API-specific errors like rate limits (HTTP 429) or token context exhaustion.
 
 ## ✨ User Experience
-- [ ] **Keyboard Shortcuts**: Add configurable shortcuts to toggle the sidebar.
 - [ ] **Custom System Prompts**: Allow users to save and use their own writing styles.
-- [ ] **Dark Mode Sync**: Automatically detect and match JanitorAI's dark/light theme settings.
 
 ## 🧹 Code Quality
 - [ ] **Logic Refactoring**: Extract heuristic scraping and API logic into separate utility modules.

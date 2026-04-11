@@ -287,6 +287,7 @@ button {
   border-top: 1px solid var(--border);
   padding-top: 8px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .settings-toggle-btn {
@@ -323,10 +324,20 @@ button {
 }
 
 .settings-panel {
-  padding-bottom: 12px;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 100;
   animation: slideUp 0.2s ease-out;
 }
 
