@@ -1,6 +1,6 @@
 # JanitorAI Writing Assistant
 
-A Firefox/Zen Browser extension that enhances your writing experience on JanitorAI with AI-powered text enhancement and smart suggestions.
+A Firefox/Chrome/Edge extension that enhances your writing experience on JanitorAI with AI-powered text enhancement and smart suggestions.
 
 ## Features
 
@@ -49,10 +49,6 @@ A Firefox/Zen Browser extension that enhances your writing experience on Janitor
 ├── manifest.json           # Extension configuration
 ├── background.js          # API handling and prompt logic
 ├── content.js            # JanitorAI page interaction and history scraping
-├── popup/
-│   ├── popup.html        # Settings popup UI
-│   ├── popup.css         # Settings popup styles
-│   └── popup.js          # Settings popup logic
 └── sidebar/
     ├── sidebar.html      # Main sidebar UI
     ├── sidebar.css       # Sidebar styles

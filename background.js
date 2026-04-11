@@ -4,6 +4,11 @@ const browser = globalThis.browser ?? globalThis.chrome;
 // Edge/Chrome: Open side panel on icon click
 if (typeof chrome !== "undefined" && chrome.sidePanel) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error);
+} else if (typeof browser !== "undefined" && browser.sidebarAction && browser.sidebarAction.toggle) {
+  // Firefox: Toggle sidebar on icon click
+  browser.action.onClicked.addListener(() => {
+    browser.sidebarAction.toggle().catch(console.error);
+  });
 }
 
 // Listener for messages from content scripts or sidebar
