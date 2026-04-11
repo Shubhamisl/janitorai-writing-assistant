@@ -72,7 +72,7 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
 
 function showSettingsStatus(msg, isSuccess) {
     elements.settingsStatus.textContent = msg;
-    elements.settingsStatus.className = 'settings-status ' + (isSuccess ? 'success' : 'error');
+    elements.settingsStatus.className = `settings-status ${isSuccess ? 'success' : 'error'}`;
     clearTimeout(elements.settingsStatus._timer);
     elements.settingsStatus._timer = setTimeout(() => {
         elements.settingsStatus.textContent = '';
@@ -165,7 +165,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
             showError(response.error || 'Enhancement failed. Check your API key in Settings.');
         }
     } catch (err) {
-        showError('Communication error: ' + err.message);
+        showError(`Communication error: ${err.message}`);
     } finally {
         setLoading(false);
     }
@@ -217,7 +217,7 @@ function renderSuggestions(text) {
     const suggestions = lines.filter(l => l.match(/^\d+\./) || l.trim().startsWith('-')).slice(0, 3);
 
     if (suggestions.length === 0) {
-        const chip = createChip(text.substring(0, 100) + '...');
+        const chip = createChip(`${text.substring(0, 100)}...`);
         elements.suggestionChips.appendChild(chip);
         return;
     }
