@@ -129,12 +129,16 @@ function getChatHistory(limit = 10) {
 // the current textarea at the time of handling.
 // ---------------------------------------------------------------------------
 browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    console.log(`JanitorAI Writing Assistant: Content script processing message type [${message.type}]`);
     if (message.type === 'applyText') {
         insertText(message.text);
         // No async response needed
     } else if (message.type === 'getHistory') {
         const history = getChatHistory();
+        console.log(`JanitorAI Writing Assistant: Extracted ${history.length} messages from history.`);
         sendResponse({ history });
+    } else {
+        console.warn(`JanitorAI Writing Assistant: Received unexpected message type [${message.type}]`);
     }
 });
 

@@ -16,11 +16,14 @@ elements.openSidebarBtn.addEventListener('click', async () => {
         if (tab) {
             if (browser.sidePanel?.open) {
                 // Chrome / Edge 116+
+                console.log("JanitorAI Writing Assistant: Emitting open sidepanel command using Chrome API.");
                 await browser.sidePanel.open({ tabId: tab.id });
             } else if (browser.sidebarAction?.open) {
                 // Firefox
+                console.log("JanitorAI Writing Assistant: Emitting open sidebar command using Firefox API.");
                 await browser.sidebarAction.open();
             } else {
+                console.warn("JanitorAI Writing Assistant: Sidepanel API unsupported, manual interaction required.");
                 showStatus("Click the toolbar icon to open the sidebar", false);
             }
         }
@@ -51,6 +54,7 @@ elements.saveBtn.addEventListener('click', async () => {
         model: model // If empty, background script uses default
     });
 
+    console.log("JanitorAI Writing Assistant: Saved extension settings successfully.");
     showStatus("Settings Saved!", true);
     setTimeout(() => {
         elements.status.textContent = "";

@@ -8,17 +8,30 @@ if (typeof chrome !== "undefined" && chrome.sidePanel) {
 
 // Listener for messages from content scripts or sidebar
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log(`JanitorAI Writing Assistant: Background script processing message type [${message.type}]`);
   if (message.type === "enhanceText") {
     handleEnhancement(message.text, message.model, message.style, message.history)
-      .then(response => sendResponse({ success: true, result: response }))
-      .catch(error => sendResponse({ success: false, error: error.message }));
+      .then(response => {
+        console.log(`JanitorAI Writing Assistant: Enhancement successful.`);
+        sendResponse({ success: true, result: response });
+      })
+      .catch(error => {
+        console.error(`JanitorAI Writing Assistant: Enhancement failed. Error: ${error.message}`);
+        sendResponse({ success: false, error: error.message });
+      });
     return true;
   }
 
   if (message.type === "suggestNext") {
     handleSuggestion(message.history, message.model)
-      .then(response => sendResponse({ success: true, result: response }))
-      .catch(error => sendResponse({ success: false, error: error.message }));
+      .then(response => {
+        console.log(`JanitorAI Writing Assistant: Suggestion successful.`);
+        sendResponse({ success: true, result: response });
+      })
+      .catch(error => {
+        console.error(`JanitorAI Writing Assistant: Suggestion failed. Error: ${error.message}`);
+        sendResponse({ success: false, error: error.message });
+      });
     return true;
   }
 });

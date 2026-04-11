@@ -55,12 +55,14 @@ elements.enhanceBtn.addEventListener('click', async () => {
                 }
             }
         } catch (e) {
-            console.warn("Could not fetch history:", e);
+            console.warn("JanitorAI Writing Assistant: Could not fetch history:", e);
         }
 
         // Get saved model preference
         const data = await browser.storage.local.get("model");
         const modelId = data.model;
+        
+        console.log(`JanitorAI Writing Assistant: Sending 'enhanceText' command for model [${modelId}]`);
 
         // Step 2: Send to Background for Enhancement
         const response = await browser.runtime.sendMessage({
@@ -98,10 +100,11 @@ elements.suggestBtn.addEventListener('click', async () => {
                 if (historyResponse?.history) history = historyResponse.history;
             }
         } catch (e) {
-            console.warn("History fetch failed:", e);
+            console.warn("JanitorAI Writing Assistant: History fetch failed:", e);
         }
 
         if (history.length === 0) {
+            console.log("JanitorAI Writing Assistant: No history found to generate suggestions off of.");
             elements.suggestionChips.innerHTML = '<span class="placeholder-text">No history found. Start chatting first!</span>';
             return;
         }
@@ -166,8 +169,9 @@ elements.applyBtn.addEventListener('click', async () => {
     const text = elements.outputText.textContent;
 
     // Get active tab and send message
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
     if (tabs.length > 0) {
+        console.log("JanitorAI Writing Assistant: Applying enhanced text to active tab chat.");
         browser.tabs.sendMessage(tabs[0].id, {
             type: "applyText",
             text: text
