@@ -1,4 +1,5 @@
 // Content script for detecting chat interface
+const browser = window.browser || window.chrome;
 
 console.log("JanitorAI Writing Assistant: Content script loaded");
 

@@ -1,4 +1,10 @@
 // Background script for handling API calls and state
+const browser = window.browser || window.chrome;
+
+// Edge/Chrome: Open side panel on icon click
+if (typeof chrome !== "undefined" && chrome.sidePanel) {
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error);
+}
 
 // Listener for messages from content scripts or sidebar
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {

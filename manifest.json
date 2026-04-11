@@ -6,8 +6,12 @@
   "permissions": [
     "storage",
     "activeTab",
-    "scripting"
+    "scripting",
+    "sidePanel"
   ],
+  "side_panel": {
+    "default_path": "sidebar/sidebar.html"
+  },
   "host_permissions": [
     "*://janitorai.com/*"
   ],

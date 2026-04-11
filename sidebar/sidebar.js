@@ -1,4 +1,5 @@
 // Sidebar logic
+const browser = window.browser || window.chrome;
 
 const elements = {
     inputText: document.getElementById('input-text'),
