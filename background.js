@@ -1,3 +1,5 @@
+import { enhanceTextCompletion, generateText } from './utils/api.js';
+
 // Background script for handling API calls and state
 const browser = globalThis.browser ?? globalThis.chrome;
 
@@ -57,27 +59,7 @@ Example:
 2. [Diplomatic] Try to negotiate a truce.
 3. [Flirty] Compliment their eyes.`;
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${data.apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "https://janitorai.com",
-      "X-Title": "JanitorAI Writing Assistant"
-    },
-    body: JSON.stringify({
-      model: model || "anthropic/claude-3.5-sonnet",
-      messages: [{ role: "system", content: prompt }]
-    })
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `API Error: ${response.status}`);
-  }
-
-  const result = await response.json();
-  return result.choices[0].message.content;
+  return generateText(prompt, model, data.apiKey);
 }
 
 async function handleEnhancement(text, model, style, history = []) {
@@ -97,30 +79,7 @@ async function handleEnhancement(text, model, style, history = []) {
       systemPrompt += `\n\n[CONTEXT - RECENT CONVERSATION]\nThe following is the recent conversation history. Use it to inform the tone, plot, and character voice.\n\n${historyText}\n\n[END CONTEXT]`;
     }
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://janitorai.com", // Optional, for OpenRouter rankings
-        "X-Title": "JanitorAI Writing Assistant"
-      },
-      body: JSON.stringify({
-        model: model || "anthropic/claude-3.5-sonnet", // Default model
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: text }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `API Error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.choices[0].message.content;
+    return enhanceTextCompletion(systemPrompt, text, model, apiKey);
 
   } catch (err) {
     console.error("Enhancement failed:", err);
