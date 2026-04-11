@@ -168,7 +168,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
 // Suggestion button handler
 // ---------------------------------------------------------------------------
 elements.suggestBtn.addEventListener('click', async () => {
-    elements.suggestionChips.innerHTML = '<span class="placeholder-text">Thinking...</span>';
+    setPlaceholder(elements.suggestionChips, 'Thinking...');
 
     try {
         // Step 1: Get History (vital for suggestions)
@@ -176,7 +176,7 @@ elements.suggestBtn.addEventListener('click', async () => {
 
         if (history.length === 0) {
             console.log('JanitorAI Writing Assistant: No history found to generate suggestions off of.');
-            elements.suggestionChips.innerHTML = '<span class="placeholder-text">No history found. Start chatting first!</span>';
+            setPlaceholder(elements.suggestionChips, 'No history found. Start chatting first!');
             return;
         }
 
@@ -192,18 +192,18 @@ elements.suggestBtn.addEventListener('click', async () => {
         if (response.success) {
             renderSuggestions(response.result);
         } else {
-            elements.suggestionChips.innerHTML = '<span class="placeholder-text">Error generating ideas.</span>';
+            setPlaceholder(elements.suggestionChips, 'Error generating ideas.');
             showError(response.error);
         }
 
     } catch (err) {
-        elements.suggestionChips.innerHTML = '<span class="placeholder-text">Connection error.</span>';
+        setPlaceholder(elements.suggestionChips, 'Connection error.');
         showError(err.message);
     }
 });
 
 function renderSuggestions(text) {
-    elements.suggestionChips.innerHTML = '';
+    elements.suggestionChips.replaceChildren();
 
     // Parse the list (Expect: "1. Idea one\n2. Idea two...")
     const lines = text.split(/\n/);
@@ -278,9 +278,22 @@ async function getActiveTab() {
 
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;
-    elements.enhanceBtn.innerHTML = isLoading
-        ? '<span class="icon">⏳</span> Enhancing...'
-        : '<span class="icon">✨</span> Enhance Text';
+    elements.enhanceBtn.replaceChildren();
+
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'icon';
+    iconSpan.textContent = isLoading ? '⏳' : '✨';
+
+    elements.enhanceBtn.appendChild(iconSpan);
+    elements.enhanceBtn.appendChild(document.createTextNode(isLoading ? ' Enhancing...' : ' Enhance Text'));
+}
+
+function setPlaceholder(container, text) {
+    container.replaceChildren();
+    const span = document.createElement('span');
+    span.className = 'placeholder-text';
+    span.textContent = text;
+    container.appendChild(span);
 }
 
 function showError(msg) {
