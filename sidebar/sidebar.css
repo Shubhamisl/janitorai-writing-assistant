@@ -39,6 +39,7 @@ header {
   align-items: center;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
+  flex-shrink: 0;
 }
 
 h2 {
@@ -278,4 +279,132 @@ button {
   color: var(--text-secondary);
   font-style: italic;
   opacity: 0.6;
+}
+
+/* Settings footer */
+.settings-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+
+.settings-toggle-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.settings-toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+  transform: none;
+}
+
+.settings-chevron {
+  margin-left: auto;
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-style: normal;
+}
+
+.settings-toggle-btn[aria-expanded="true"] .settings-chevron {
+  transform: rotate(180deg);
+}
+
+.settings-panel {
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: slideUp 0.2s ease-out;
+}
+
+/* Override hidden for the panel so animation works */
+.settings-panel[hidden] {
+  display: none !important;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-field label {
+  margin-bottom: 0;
+}
+
+.settings-field input {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.settings-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.settings-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.optional {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  font-weight: 400;
+}
+
+.settings-save-btn {
+  margin-top: 2px;
+}
+
+.settings-status {
+  font-size: 0.8rem;
+  min-height: 1.2em;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+
+.settings-status.success {
+  color: var(--success);
+}
+
+.settings-status.error {
+  color: var(--error);
+}
+
+.settings-link {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  text-decoration: none;
+  padding-bottom: 4px;
+  transition: opacity 0.2s;
+}
+
+.settings-link:hover {
+  opacity: 1;
+  color: var(--accent);
 }

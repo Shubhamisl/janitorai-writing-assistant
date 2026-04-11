@@ -20,7 +20,7 @@
       <textarea id="input-text" placeholder="Type here or text will appear from chat..."></textarea>
     </div>
 
-    <!-- NEW: Suggestions Section -->
+    <!-- Suggestions Section -->
     <div class="suggestions-section">
       <div class="section-header">
         <label>Quick Suggestions</label>
@@ -64,6 +64,29 @@
     </div>
 
     <div id="error-message" class="error-box hidden"></div>
+
+    <!-- Settings Footer (collapsible) -->
+    <div class="settings-footer">
+      <button id="settings-toggle" class="settings-toggle-btn" aria-expanded="false" aria-controls="settings-panel">
+        <span class="settings-toggle-icon">⚙️</span>
+        <span>Settings</span>
+        <span class="settings-chevron">▾</span>
+      </button>
+      <div id="settings-panel" class="settings-panel" hidden>
+        <div class="settings-field">
+          <label for="settings-api-key">OpenRouter API Key</label>
+          <input type="password" id="settings-api-key" placeholder="sk-or-...">
+          <small class="settings-hint">Stored locally in your browser</small>
+        </div>
+        <div class="settings-field">
+          <label for="settings-model-id">AI Model ID <span class="optional">(optional)</span></label>
+          <input type="text" id="settings-model-id" placeholder="anthropic/claude-3.5-sonnet">
+        </div>
+        <button id="settings-save-btn" class="primary-btn settings-save-btn">Save Settings</button>
+        <div id="settings-status" class="settings-status" aria-live="polite"></div>
+        <a href="https://openrouter.ai/keys" target="_blank" class="settings-link">Get an API Key ↗</a>
+      </div>
+    </div>
   </div>
   <script src="sidebar.js"></script>
 </body>
