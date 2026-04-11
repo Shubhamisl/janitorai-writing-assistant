@@ -81,6 +81,48 @@ function showSettingsStatus(msg, isSuccess) {
 }
 
 // ---------------------------------------------------------------------------
+// Inject content scripts into the active tab if they are not already present,
+// then request the chat history. This avoids the need to reload the tab when
+// the extension is first opened against an already-loaded page.
+// ---------------------------------------------------------------------------
+async function fetchHistory() {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs.length === 0) return [];
+    const tab = tabs[0];
+    const tabId = tab.id;
+
+    // Guard: active tab must be on JanitorAI. If the user switched to another
+    // site while the sidebar stayed open, we cannot read or inject anything.
+    if (!tab.url || !tab.url.includes('janitorai.com')) {
+        throw new Error('Please switch to a JanitorAI tab first.');
+    }
+
+    // First attempt - content script may already be running.
+    try {
+        const res = await browser.tabs.sendMessage(tabId, { type: 'getHistory' });
+        if (res && res.history) return res.history;
+    } catch (_) {
+        // Content script not yet injected into this tab - fall through to inject.
+    }
+
+    // Inject the scripts programmatically and retry once.
+    try {
+        await browser.scripting.executeScript({
+            target: { tabId },
+            files: ['utils/scraping.js', 'content.js']
+        });
+        // Give the newly-injected listener a tick to register.
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const res = await browser.tabs.sendMessage(tabId, { type: 'getHistory' });
+        if (res && res.history) return res.history;
+    } catch (injectErr) {
+        console.warn('JanitorAI Writing Assistant: Could not inject content scripts:', injectErr);
+    }
+
+    return [];
+}
+
+// ---------------------------------------------------------------------------
 // Save style preference
 // ---------------------------------------------------------------------------
 elements.styleSelect.addEventListener('change', () => {
@@ -99,18 +141,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
 
     try {
         // Step 1: Get History from Content Script
-        let history = [];
-        try {
-            const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-            if (tabs.length > 0) {
-                const historyResponse = await browser.tabs.sendMessage(tabs[0].id, { type: 'getHistory' });
-                if (historyResponse && historyResponse.history) {
-                    history = historyResponse.history;
-                }
-            }
-        } catch (e) {
-            console.warn('JanitorAI Writing Assistant: Could not fetch history:', e);
-        }
+        const history = await fetchHistory();
 
         // Get saved model preference
         const data = await browser.storage.local.get('model');
@@ -148,16 +179,7 @@ elements.suggestBtn.addEventListener('click', async () => {
 
     try {
         // Step 1: Get History (vital for suggestions)
-        let history = [];
-        try {
-            const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-            if (tabs.length > 0) {
-                const historyResponse = await browser.tabs.sendMessage(tabs[0].id, { type: 'getHistory' });
-                if (historyResponse?.history) history = historyResponse.history;
-            }
-        } catch (e) {
-            console.warn('JanitorAI Writing Assistant: History fetch failed:', e);
-        }
+        const history = await fetchHistory();
 
         if (history.length === 0) {
             console.log('JanitorAI Writing Assistant: No history found to generate suggestions off of.');
@@ -183,6 +205,7 @@ elements.suggestBtn.addEventListener('click', async () => {
 
     } catch (err) {
         elements.suggestionChips.innerHTML = '<span class="placeholder-text">Connection error.</span>';
+        showError(err.message);
     }
 });
 
