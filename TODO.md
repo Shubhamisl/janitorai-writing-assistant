@@ -9,5 +9,5 @@ These are the suggested improvements focused on robustness, user experience, and
 - [ ] **Custom System Prompts**: Allow users to save and use their own writing styles.
 
 ## 🧹 Code Quality
-- [ ] **Logic Refactoring**: Extract heuristic scraping and API logic into separate utility modules.
+- [x] **Logic Refactoring**: Extract heuristic scraping and API logic into separate utility modules.
 - [ ] **Shadow DOM Implementation**: Wrap UI components in Shadow DOM to prevent CSS leakage or conflicts with the host site. *(Note: Currently low priority as the native Sidebar/Side Panel is already isolated; only required if injecting UI elements directly into the JanitorAI page. For example: "✨ Enhance" button floating next to the "Send" button.")*
