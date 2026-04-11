@@ -3,139 +3,151 @@ const browser = globalThis.browser ?? globalThis.chrome;
 
 console.log("JanitorAI Writing Assistant: Content script loaded");
 
-// Configuration
-const CONFIG = {
-    chatInputSelectors: [
-        'textarea[placeholder*="message"]',
-        'textarea[class*="input"]',
-        'textarea' // Fallback
-    ]
+// ---------------------------------------------------------------------------
+// Selectors derived from JanitorAI's actual DOM structure.
+// The class names are CSS-module hashes (e.g. "_chatTextarea_1e2lg_1") that
+// may change between deploys, so we match only on the stable prefix using
+// the [class*="..."] attribute selector.
+// ---------------------------------------------------------------------------
+
+const SELECTORS = {
+    // The main chat textarea
+    chatInput: [
+        'textarea[class*="_chatTextarea_"]',
+        'textarea[placeholder*="Enter to send"]',
+        'textarea' // last-resort fallback
+    ],
+
+    // Each rendered message (both user and character)
+    messageItem: 'li[class*="_messageDisplayWrapper_"]',
+
+    // The speaker name inside a message
+    nameText: 'div[class*="_nameText_"]',
+
+    // Present ONLY in character (AI) messages -- used for role detection
+    characterIcon: 'img[alt="Character Icon"]',
+
+    // The message body wrapper that contains the paragraph text
+    messageBody: 'div[class*="_messageBody_"]'
 };
 
-// React-compatible value setter
-function setNativeValue(element, value) {
-    const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
-    const prototype = Object.getPrototypeOf(element);
-    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value').set;
-
-    if (valueSetter && valueSetter !== prototypeValueSetter) {
-        prototypeValueSetter.call(element, value);
-    } else {
-        valueSetter.call(element, value);
-    }
-
-    element.dispatchEvent(new Event('input', { bubbles: true }));
+// ---------------------------------------------------------------------------
+// React-compatible textarea value setter.
+// We must trigger React's synthetic onChange so the framework picks up the
+// new value. We call the prototype setter (not the instance one) to bypass
+// React's own descriptor and then fire a real "input" event.
+// ---------------------------------------------------------------------------
+function setNativeValue(textarea, value) {
+    const setter = Object.getOwnPropertyDescriptor(
+        HTMLTextAreaElement.prototype, 'value'
+    ).set;
+    setter.call(textarea, value);
+    textarea.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-// Function to find the chat input
+// ---------------------------------------------------------------------------
+// Find the current chat textarea (it may be re-mounted by React at any time)
+// ---------------------------------------------------------------------------
 function findChatInput() {
-    for (const selector of CONFIG.chatInputSelectors) {
-        const element = document.querySelector(selector);
-        if (element) return element;
+    for (const selector of SELECTORS.chatInput) {
+        const el = document.querySelector(selector);
+        if (el) return el;
     }
     return null;
 }
 
-// Observer to detect when chat interface loads
-const observer = new MutationObserver((mutations) => {
-    const chatInput = findChatInput();
-    if (chatInput && !chatInput.dataset.writerConnected) {
-        console.log("JanitorAI Writing Assistant: Chat input detected");
-        chatInput.dataset.writerConnected = "true";
-
-        // Listen for events from the sidebar (via background or direct custom events if we go that route)
-        // For now, we'll setup a listener for a custom event that the sidebar could dispatch if it were injected
-        // OR we just wait for the user to paste/apply.
-
-        // Since sidebar is separate context in Firefox, we might need a runtime listener here 
-        // to receive "Apply" commands from the sidebar script.
-
-        // Listen for events from the sidebar
-        browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-            if (message.type === "applyText") {
-                insertText(chatInput, message.text);
-            } else if (message.type === "getHistory") {
-                const history = getChatHistory();
-                sendResponse({ history: history });
-            }
-        });
+// ---------------------------------------------------------------------------
+// Insert text into the chat textarea.
+// We always set the full value (replacing any existing draft) so the output
+// from the assistant is placed cleanly, as if the user had typed it.
+// ---------------------------------------------------------------------------
+function insertText(text) {
+    const input = findChatInput();
+    if (!input) {
+        console.warn("JanitorAI Writing Assistant: chat textarea not found");
+        return;
     }
-});
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+    input.focus();
 
-function insertText(inputElement, text) {
-    if (!inputElement) return;
-    inputElement.focus();
-
-    // Strategy 1: document.execCommand (Best for ContentEditable/Rich Text)
-    // JanitorAI might use a rich text editor or a complex textarea.
+    // Prefer execCommand for contenteditable-based editors; on a plain
+    // <textarea> this replaces the current selection (or all text if none).
     const success = document.execCommand('insertText', false, text);
 
-    // Strategy 2: If execCommand failed (or didn't work as expected on a standard textarea), 
-    // force React value setter.
-    if (!success || inputElement.value === "") {
-        const currentVal = inputElement.value;
-        // Append if there's existing text and we didn't just replace it via execCommand
-        const newValue = currentVal ? currentVal + " " + text : text;
-        setNativeValue(inputElement, newValue);
+    // Fall back to the React-compatible setter when execCommand does nothing.
+    if (!success || input.value === '') {
+        setNativeValue(input, text);
     }
 }
 
-// Heuristic Chat History Scraper
-function getChatHistory() {
+// ---------------------------------------------------------------------------
+// Chat history scraper -- reads the last N messages from the virtual list.
+//
+// Structure (from temp.html inspection):
+//   li[class*="_messageDisplayWrapper_"]
+//     div[class*="_messageBody_"]
+//       div[class*="_nameText_"]          <-- speaker name
+//       img[alt="Character Icon"]         <-- ONLY present for AI messages
+//       p                                 <-- message text (may be multiple)
+// ---------------------------------------------------------------------------
+function getChatHistory(limit = 10) {
     const history = [];
 
-    // Strategy: Find all message containers. 
-    // JanitorAI usually has message blocks. We look for containers with significant text.
-    // We'll look for elements that look like message bubbles.
+    const messageItems = document.querySelectorAll(SELECTORS.messageItem);
+    // Take the most recent `limit` messages (virtual list renders in order)
+    const recent = Array.from(messageItems).slice(-limit);
 
-    // Generic selector for message-like divs (often have distinct classes in React apps)
-    // We'll look for any div that contains text and is inside the main scrollable area.
-    // Best guess for JanitorAI's structure:
+    for (const msgEl of recent) {
+        const bodyEl = msgEl.querySelector(SELECTORS.messageBody);
+        if (!bodyEl) continue;
 
-    // Try to find the main chat container first
-    const mainContainer = document.querySelector('div[class*="chat-msgs"]') || document.body;
+        // Role: character messages carry the JanitorAI logo icon next to the
+        // speaker name. User messages have no such icon.
+        const isCharacter = Boolean(msgEl.querySelector(SELECTORS.characterIcon));
+        const role = isCharacter ? 'model' : 'user';
 
-    // If we can't find a specific container, fall back to searching all divs with text
-    // This is a "blind" heuristic but robust against minor class name changes
-    const candidates = mainContainer.querySelectorAll('div[class*="msg"], div[class*="message"], div[class*="Message"], div[class*="bubble"]');
+        // Collect the text from all <p> tags inside the message body.
+        // A single message can span multiple paragraphs.
+        const paragraphs = bodyEl.querySelectorAll('p');
+        const content = Array.from(paragraphs)
+            .map(p => p.innerText.trim())
+            .filter(Boolean)
+            .join('\n')
+            .trim();
 
-    // Filter for elements that actually have text and aren't hidden
-    const messages = Array.from(candidates).filter(el => {
-        return el.innerText.length > 5 && el.offsetParent !== null;
-    });
-
-    // Take the last 10 messages
-    const recentMessages = messages.slice(-10);
-
-    recentMessages.forEach(msgEl => {
-        // Determine role based on alignment or class
-        // Heuristic: User messages often have specific classes or alignment
-        // We'll assume "model" by default unless we find "user" indicators
-        let role = "model";
-
-        // Check for "User" or "You" labels, or right-alignment classes
-        const textContent = msgEl.innerText;
-        const className = msgEl.className.toLowerCase();
-        const isUser = className.includes("user") ||
-            className.includes("mine") ||
-            className.includes("right") ||
-            msgEl.style.justifyContent === "flex-end" ||
-            msgEl.style.alignSelf === "flex-end";
-
-        if (isUser) role = "user";
-
-        // Basic cleaning
-        const cleanContent = textContent.replace(/\n+/g, ' ').trim();
-
-        if (cleanContent) {
-            history.push({ role, content: cleanContent });
+        if (content) {
+            history.push({ role, content });
         }
-    });
+    }
 
     return history;
 }
+
+// ---------------------------------------------------------------------------
+// Single top-level message listener (avoids accumulation if the textarea is
+// re-mounted by React). The listener is always registered once, and locates
+// the current textarea at the time of handling.
+// ---------------------------------------------------------------------------
+browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.type === 'applyText') {
+        insertText(message.text);
+        // No async response needed
+    } else if (message.type === 'getHistory') {
+        const history = getChatHistory();
+        sendResponse({ history });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// MutationObserver: watch for the chat textarea appearing so we can mark it
+// and log confirmation. Actual message handling no longer depends on this.
+// ---------------------------------------------------------------------------
+const observer = new MutationObserver(() => {
+    const chatInput = findChatInput();
+    if (chatInput && !chatInput.dataset.writerConnected) {
+        console.log("JanitorAI Writing Assistant: Chat textarea detected");
+        chatInput.dataset.writerConnected = 'true';
+    }
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
