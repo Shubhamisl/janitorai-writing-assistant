@@ -9,6 +9,17 @@ A Firefox/Chrome/Edge extension that enhances your writing experience on Janitor
 - **Multiple Styles**: Choose between Roleplay, Novel, or Casual writing modes
 - **Context Awareness**: Automatically scrapes chat history for better AI responses
 - **React-Compatible**: Works seamlessly with JanitorAI's React-based interface
+- **Privacy Focused**: API key stored locally, no data leaves your browser except to OpenRouter
+
+## How It Works
+
+1. The extension adds a sidebar to JanitorAI chats
+2. When you type text and click "Enhance Text", it:
+   - Scrapes recent chat history for context
+   - Sends your draft and context to OpenRouter AI with style-specific prompts
+   - Returns enhanced text for you to review
+   - Lets you insert the enhanced text directly into the chat box
+3. Smart suggestions work similarly, generating 3 distinct plot directions based on conversation history
 
 ## Installation
 
@@ -20,12 +31,24 @@ A Firefox/Chrome/Edge extension that enhances your writing experience on Janitor
 4. Select the `manifest.json` file from the extension directory
 5. The extension will appear in your browser toolbar
 
+### Chrome / Edge
+
+1. Download or clone this repository
+2. Open Chrome/Edge and navigate to `chrome://extensions`
+3. Enable "Developer mode" in the top right
+4. Click "Load unpacked"
+5. Select the extension directory
+6. The extension will appear in your browser toolbar
+
 ## Configuration
 
 1. Click the extension icon in your browser toolbar
 2. Enter your **OpenRouter API Key** (get one at [openrouter.ai](https://openrouter.ai))
 3. (Optional) Specify a custom model ID (default: `anthropic/claude-3.5-sonnet`)
 4. Click **Save Settings**
+5. The extension saves your settings locally in your browser's storage
+
+> 💡 **Tip**: Your API key never leaves your browser and is only used to make requests to OpenRouter on your behalf.
 
 ## Usage
 
@@ -46,13 +69,17 @@ A Firefox/Chrome/Edge extension that enhances your writing experience on Janitor
 
 ```
 .
-├── manifest.json           # Extension configuration
-├── background.js          # API handling and prompt logic
-├── content.js            # JanitorAI page interaction and history scraping
-└── sidebar/
-    ├── sidebar.html      # Main sidebar UI
-    ├── sidebar.css       # Sidebar styles
-    └── sidebar.js        # Sidebar logic and event handling
+├── manifest.json         # Extension configuration with permissions for storage, activeTab, scripting, and sidePanel functionality
+├── background.js         # Handles API calls to OpenRouter, manages settings, and processes messages
+├── content.js            # Detects chat interface, receives messages from sidebar, extracts chat history, and inserts text into JanitorAI's textarea
+├── sidebar/
+│   ├── sidebar.html      # Main sidebar UI
+│   ├── sidebar.css       # Sidebar styles
+│   └── sidebar.js        # Sidebar logic and event handling
+└── utils/
+    ├── prompts.js        # Generates system prompts for text enhancement and suggestion generation based on selected style and chat history
+    ├── api.js            # Handles API calls to OpenRouter with timeout management
+    └── scraping.js       # Contains selectors and functions for finding chat elements and extracting history from JanitorAI's React-based interface
 ```
 
 ## Development
