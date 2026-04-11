@@ -1,4 +1,4 @@
-// Reusable logic for making API calls to openrouter
+// Reusable logic for making API calls to OpenRouter
 
 const API_TIMEOUT = 60000; // 60 seconds
 
