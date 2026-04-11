@@ -67,11 +67,6 @@
 
     <!-- Settings Footer (collapsible) -->
     <div class="settings-footer">
-      <button id="settings-toggle" class="settings-toggle-btn" aria-expanded="false" aria-controls="settings-panel">
-        <span class="settings-toggle-icon">⚙️</span>
-        <span>Settings</span>
-        <span class="settings-chevron">▾</span>
-      </button>
       <div id="settings-panel" class="settings-panel" hidden>
         <div class="settings-field">
           <label for="settings-api-key">OpenRouter API Key</label>
@@ -86,6 +81,11 @@
         <div id="settings-status" class="settings-status" aria-live="polite"></div>
         <a href="https://openrouter.ai/keys" target="_blank" class="settings-link">Get an API Key ↗</a>
       </div>
+      <button id="settings-toggle" class="settings-toggle-btn" aria-expanded="false" aria-controls="settings-panel">
+        <span class="settings-toggle-icon">⚙️</span>
+        <span>Settings</span>
+        <span class="settings-chevron">▾</span>
+      </button>
     </div>
   </div>
   <script src="sidebar.js"></script>
