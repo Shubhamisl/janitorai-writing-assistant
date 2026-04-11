@@ -3,7 +3,6 @@
 These are the suggested improvements focused on robustness, user experience, and code quality.
 
 ## 🛠️ Robustness & Stability
-- [ ] **Better History Scraper**: Implement more specific CSS selectors for JanitorAI's React structure to improve scraper accuracy.
 - [ ] **Advanced Error Handling**: Handle API-specific errors like rate limits (HTTP 429) or token context exhaustion.
 
 ## ✨ User Experience
@@ -11,4 +10,4 @@ These are the suggested improvements focused on robustness, user experience, and
 
 ## 🧹 Code Quality
 - [ ] **Logic Refactoring**: Extract heuristic scraping and API logic into separate utility modules.
-- [ ] **Shadow DOM Implementation**: Wrap UI components in Shadow DOM to prevent CSS leakage or conflicts with the host site.
+- [ ] **Shadow DOM Implementation**: Wrap UI components in Shadow DOM to prevent CSS leakage or conflicts with the host site. *(Note: Currently low priority as the native Sidebar/Side Panel is already isolated; only required if injecting UI elements directly into the JanitorAI page. For example: "✨ Enhance" button floating next to the "Send" button.")*
