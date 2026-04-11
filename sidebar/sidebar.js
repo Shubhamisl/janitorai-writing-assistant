@@ -86,16 +86,9 @@ function showSettingsStatus(msg, isSuccess) {
 // the extension is first opened against an already-loaded page.
 // ---------------------------------------------------------------------------
 async function fetchHistory() {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    if (tabs.length === 0) return [];
-    const tab = tabs[0];
+    const tab = await getActiveTab();
+    if (!tab) return [];
     const tabId = tab.id;
-
-    // Guard: active tab must be on JanitorAI. If the user switched to another
-    // site while the sidebar stayed open, we cannot read or inject anything.
-    if (!tab.url || !tab.url.includes('janitorai.com')) {
-        throw new Error('Please switch to a JanitorAI tab first.');
-    }
 
     // First attempt - content script may already be running.
     try {
@@ -244,15 +237,18 @@ function createChip(text) {
 // Apply button handler -- sends text to content script
 // ---------------------------------------------------------------------------
 elements.applyBtn.addEventListener('click', async () => {
-    const text = elements.outputText.textContent;
+    try {
+        const tab = await getActiveTab();
+        if (!tab) return;
 
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    if (tabs.length > 0) {
+        const text = elements.outputText.textContent;
         console.log('JanitorAI Writing Assistant: Applying enhanced text to active tab chat.');
-        browser.tabs.sendMessage(tabs[0].id, {
+        browser.tabs.sendMessage(tab.id, {
             type: 'applyText',
             text: text
         });
+    } catch (err) {
+        showError(err.message);
     }
 });
 
@@ -269,6 +265,17 @@ elements.copyBtn.addEventListener('click', () => {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+async function getActiveTab() {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    const tab = tabs[0];
+    if (!tab) return null;
+
+    if (!tab.url || !tab.url.includes('janitorai.com')) {
+        throw new Error('Please switch to a JanitorAI tab first.');
+    }
+    return tab;
+}
+
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;
     elements.enhanceBtn.innerHTML = isLoading
