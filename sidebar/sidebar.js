@@ -209,17 +209,20 @@ function renderSuggestions(text) {
     const lines = text.split(/\n/);
     const suggestions = lines.filter(l => l.match(/^\d+\./) || l.trim().startsWith('-')).slice(0, 3);
 
+    const fragment = document.createDocumentFragment();
+
     if (suggestions.length === 0) {
         const chip = createChip(`${text.substring(0, 100)}...`);
-        elements.suggestionChips.appendChild(chip);
-        return;
+        fragment.appendChild(chip);
+    } else {
+        suggestions.forEach(line => {
+            const cleanText = line.replace(/^\d+\.|^-\s*/, '').trim();
+            const chip = createChip(cleanText);
+            fragment.appendChild(chip);
+        });
     }
 
-    suggestions.forEach(line => {
-        const cleanText = line.replace(/^\d+\.|^-\s*/, '').trim();
-        const chip = createChip(cleanText);
-        elements.suggestionChips.appendChild(chip);
-    });
+    elements.suggestionChips.appendChild(fragment);
 }
 
 function createChip(text) {
