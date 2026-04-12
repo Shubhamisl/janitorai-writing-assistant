@@ -14,6 +14,11 @@
 
 <body>
   <div class="container">
+    <div id="top-alert" class="top-alert hidden">
+      <div id="alert-message" class="top-alert-message"></div>
+      <button id="alert-close-btn" class="top-alert-close">&times;</button>
+    </div>
+
     <header>
       <h2>Writing Assistant</h2>
       <div class="status-indicator online" title="Ready"></div>
@@ -67,8 +72,6 @@
       </button>
     </div>
 
-    <div id="error-message" class="error-box hidden"></div>
-
     <!-- Settings Footer (collapsible) -->
     <div class="settings-footer">
       <div id="settings-panel" class="settings-panel" hidden>
@@ -82,7 +85,6 @@
           <input type="text" id="settings-model-id" placeholder="anthropic/claude-3.5-sonnet">
         </div>
         <button id="settings-save-btn" class="primary-btn settings-save-btn">Save Settings</button>
-        <div id="settings-status" class="settings-status" aria-live="polite"></div>
         <a href="https://openrouter.ai/keys" target="_blank" class="settings-link">Get an API Key ↗</a>
       </div>
       <button id="settings-toggle" class="settings-toggle-btn" aria-expanded="false" aria-controls="settings-panel">
@@ -92,6 +94,7 @@
       </button>
     </div>
   </div>
+
 </body>
 
 </html>

@@ -11,7 +11,6 @@ const elements = {
     outputText: document.getElementById('output-text'),
     applyBtn: document.getElementById('apply-btn'),
     copyBtn: document.getElementById('copy-btn'),
-    errorBox: document.getElementById('error-message'),
     modelDisplay: document.getElementById('model-display'),
     // Settings footer
     settingsToggle: document.getElementById('settings-toggle'),
@@ -19,7 +18,10 @@ const elements = {
     settingsApiKey: document.getElementById('settings-api-key'),
     settingsModelId: document.getElementById('settings-model-id'),
     settingsSaveBtn: document.getElementById('settings-save-btn'),
-    settingsStatus: document.getElementById('settings-status')
+    // Top alert banner
+    topAlert: document.getElementById('top-alert'),
+    alertMessage: document.getElementById('alert-message'),
+    alertCloseBtn: document.getElementById('alert-close-btn')
 };
 
 // ---------------------------------------------------------------------------
@@ -71,13 +73,7 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
 });
 
 function showSettingsStatus(msg, isSuccess) {
-    elements.settingsStatus.textContent = msg;
-    elements.settingsStatus.className = `settings-status ${isSuccess ? 'success' : 'error'}`;
-    clearTimeout(elements.settingsStatus._timer);
-    elements.settingsStatus._timer = setTimeout(() => {
-        elements.settingsStatus.textContent = '';
-        elements.settingsStatus.className = 'settings-status';
-    }, 2500);
+    showAlert(msg, isSuccess ? 'success' : 'error', isSuccess ? 'Success' : 'Settings Error');
 }
 
 // ---------------------------------------------------------------------------
@@ -313,10 +309,48 @@ function setPlaceholder(container, text) {
 }
 
 function showError(msg) {
-    elements.errorBox.textContent = msg;
-    elements.errorBox.classList.remove('hidden');
+    showAlert(msg, 'error', 'Error');
 }
 
 function hideError() {
-    elements.errorBox.classList.add('hidden');
+    hideAlert();
 }
+
+// ---------------------------------------------------------------------------
+// Alert Banner
+// ---------------------------------------------------------------------------
+function showAlert(msg, type = 'error', title = 'Alert') {
+    // Clear any existing auto-hide timer unconditionally
+    clearTimeout(elements.topAlert._timer);
+
+    // Securely set the message content using DOM APIs to prevent XSS
+    elements.alertMessage.replaceChildren();
+    if (title) {
+        const strong = document.createElement('strong');
+        strong.textContent = `${title}!`;
+        elements.alertMessage.appendChild(strong);
+        elements.alertMessage.appendChild(document.createTextNode(` ${msg}`));
+    } else {
+        elements.alertMessage.textContent = msg;
+    }
+
+    elements.topAlert.className = 'top-alert'; // reset classes
+    if (type === 'error') {
+        elements.topAlert.classList.add('error');
+    } else if (type === 'success') {
+        elements.topAlert.classList.add('success');
+    }
+
+    elements.topAlert.classList.remove('hidden');
+
+    // Auto-hide after 5 seconds if not an error
+    if (type === 'success') {
+        elements.topAlert._timer = setTimeout(hideAlert, 5000);
+    }
+}
+
+function hideAlert() {
+    elements.topAlert.classList.add('hidden');
+}
+
+elements.alertCloseBtn.addEventListener('click', hideAlert);
