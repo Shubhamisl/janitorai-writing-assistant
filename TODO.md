@@ -12,4 +12,3 @@ These are the suggested improvements focused on robustness, user experience, and
 - [ ] **Shadow DOM Implementation**: Wrap UI components in Shadow DOM to prevent CSS leakage or conflicts with the host site. *(Note: Currently low priority as the native Sidebar/Side Panel is already isolated; only required if injecting UI elements directly into the JanitorAI page. For example: "✨ Enhance" button floating next to the "Send" button.")*
 
 ## Unsorted
-- [ ] Better message / error display system

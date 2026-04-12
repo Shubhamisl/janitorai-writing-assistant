@@ -11,6 +11,7 @@ const elements = {
     outputText: document.getElementById('output-text'),
     applyBtn: document.getElementById('apply-btn'),
     copyBtn: document.getElementById('copy-btn'),
+    charCount: document.getElementById('char-count'),
     modelDisplay: document.getElementById('model-display'),
     statusIndicator: document.querySelector('.status-indicator'),
     // Status Bar
@@ -39,7 +40,7 @@ function setStatusBar(text, icon = '✨', state = 'ready') {
     if (state !== 'ready') {
         elements.statusBar.classList.add(state);
     }
-    
+
     // Sync the header indicator dot for 'working' and 'offline' states
     if (state === 'working') {
         elements.statusIndicator.className = 'status-indicator working';
@@ -62,6 +63,15 @@ browser.storage.local.get(['style', 'model', 'apiKey']).then(data => {
     }
     if (data.apiKey) elements.settingsApiKey.value = data.apiKey;
 });
+
+// Input interaction logic
+elements.inputText.addEventListener('input', () => {
+    updateCharCount(elements.inputText.value.length);
+});
+
+function updateCharCount(count) {
+    elements.charCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+}
 
 // Keep model display in sync when settings are saved
 browser.storage.onChanged.addListener((changes, area) => {
@@ -198,7 +208,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
 // Suggestion button handler
 // ---------------------------------------------------------------------------
 elements.suggestBtn.addEventListener('click', async () => {
-    setPlaceholder(elements.suggestionChips, 'Thinking...');
+    showSuggestionSkeletons();
     setStatusBar('Brainstorming ideas...', '🧠', 'working');
 
     try {
@@ -268,7 +278,8 @@ function createChip(text) {
     chip.title = 'Click to use';
     chip.onclick = () => {
         elements.inputText.value = text;
-        setStatusBar('Draft updated', '📝', 'ready');
+        updateCharCount(text.length);
+        setStatusBar('Draft updated', '📝', 'success');
         setTimeout(() => checkCurrentContext(), 2000);
     };
     return chip;
@@ -414,6 +425,15 @@ function setPlaceholder(container, text) {
     span.className = 'placeholder-text';
     span.textContent = text;
     container.appendChild(span);
+}
+
+function showSuggestionSkeletons() {
+    elements.suggestionChips.replaceChildren();
+    for (let i = 0; i < 3; i++) {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'skeleton-chip';
+        elements.suggestionChips.appendChild(skeleton);
+    }
 }
 
 function showError(msg) {
