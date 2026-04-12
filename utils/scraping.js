@@ -43,7 +43,7 @@ function getChatHistory(limit = 10) {
         // Role: character messages carry the JanitorAI logo icon next to the
         // speaker name. User messages have no such icon.
         const isCharacter = Boolean(msgEl.querySelector(SELECTORS.characterIcon));
-        const role = isCharacter ? 'model' : 'user';
+        const role = isCharacter ? 'assistant' : 'user';
 
         // Collect the text from all <p> tags inside the message body.
         const paragraphs = bodyEl.querySelectorAll('p');
