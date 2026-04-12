@@ -100,10 +100,31 @@ header h2 {
   animation: pulse-green 2s infinite;
 }
 
+.status-indicator.working {
+  background-color: var(--accent-purple);
+  box-shadow: 0 0 10px var(--accent-purple);
+  animation: pulse-purple 1s infinite;
+}
+
 .status-indicator.offline {
   background-color: var(--text-muted);
   box-shadow: none;
   animation: none;
+}
+
+@keyframes pulse-purple {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(174, 153, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(174, 153, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(174, 153, 255, 0);
+  }
 }
 
 @keyframes pulse-green {

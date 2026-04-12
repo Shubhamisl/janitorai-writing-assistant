@@ -12,6 +12,7 @@ const elements = {
     applyBtn: document.getElementById('apply-btn'),
     copyBtn: document.getElementById('copy-btn'),
     modelDisplay: document.getElementById('model-display'),
+    statusIndicator: document.querySelector('.status-indicator'),
     // Status Bar
     statusBar: document.getElementById('status-bar'),
     statusIcon: document.getElementById('status-icon'),
@@ -37,6 +38,16 @@ function setStatusBar(text, icon = '✨', state = 'ready') {
     elements.statusBar.className = 'status-bar';
     if (state !== 'ready') {
         elements.statusBar.classList.add(state);
+    }
+    
+    // Sync the header indicator dot for 'working' and 'offline' states
+    if (state === 'working') {
+        elements.statusIndicator.className = 'status-indicator working';
+    } else if (state === 'offline' || state === 'error') {
+        elements.statusIndicator.className = 'status-indicator offline';
+    } else {
+        // 'ready' or 'success' usually means the site is still online
+        elements.statusIndicator.className = 'status-indicator online';
     }
 }
 
