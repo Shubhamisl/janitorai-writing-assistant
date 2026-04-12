@@ -70,7 +70,7 @@ elements.inputText.addEventListener('input', () => {
 });
 
 function updateCharCount(count) {
-    elements.charCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+    elements.charCount.textContent = `${count} chars`;
 }
 
 // Keep model display in sync when settings are saved
