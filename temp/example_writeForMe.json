@@ -1,0 +1,37 @@
+{
+  "model": "arcee-ai/trinity-large-preview:free",
+  "messages": [
+    {
+      "content": "<Scenario>Scenario TEST</Scenario>\n<example_dialogs>Example dialogs TEST</example_dialogs>\n<summary>chat memory here\nanother line of memory</summary>\n",
+      "role": "system"
+    },
+    {
+      "content": ".",
+      "role": "user"
+    },
+    {
+      "content": "Initial messages (first messages) TEST",
+      "role": "assistant"
+    },
+    {
+      "content": "Paul: test user message 1",
+      "role": "user"
+    },
+    {
+      "content": "\"Hey Paul\"",
+      "role": "assistant"
+    },
+    {
+      "content": "Paul: \"Hi, char.\"\n\n\"This is another paragraph.\"",
+      "role": "user"
+    },
+    {
+      "content": "\"Hey Paul.\"\n\"I can write another paragraph too.\"\n\n\"And another one. Still in the same message!\"",
+      "role": "assistant"
+    },
+    {
+      "content": "write Paul's next message to Character Chat Name TEST\n\nlook at the last few messages closely. what just happened? what tension or momentum exists? write a reply that:\n- directly responds to or builds on what Character Chat Name TEST just said/did\n- moves the scene forward with a new action, question, revelation, or emotional beat\n- feels natural to Paul's voice, not generic\n- aim for 4-8 sentences, a solid medium-length reply\n- uses markdown naturally (italics for actions/internal thoughts)\n- gives Character Chat Name TEST something compelling to react to\nPaul personality/appearance: A 21-year-old male with blonde hair and blue eyes. He has a lean, muscular build with sharp definition. Loner by nature.\n\noutput ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'",
+      "role": "user"
+    }
+  ]
+}

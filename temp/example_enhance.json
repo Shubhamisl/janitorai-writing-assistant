@@ -1,0 +1,37 @@
+{
+  "model": "arcee-ai/trinity-large-preview:free",
+  "messages": [
+    {
+      "content": "<Scenario>Scenario TEST</Scenario>\n<example_dialogs>Example dialogs TEST</example_dialogs>\n<summary>chat memory here\nanother line of memory</summary>\n",
+      "role": "system"
+    },
+    {
+      "content": ".",
+      "role": "user"
+    },
+    {
+      "content": "Initial messages (first messages) TEST",
+      "role": "assistant"
+    },
+    {
+      "content": "Paul: test user message 1",
+      "role": "user"
+    },
+    {
+      "content": "\"Hey Paul\"",
+      "role": "assistant"
+    },
+    {
+      "content": "Paul: \"Hi, char.\"\n\n\"This is another paragraph.\"",
+      "role": "user"
+    },
+    {
+      "content": "\"Hey Paul.\"\n\"I can write another paragraph too.\"\n\n\"And another one. Still in the same message!\"",
+      "role": "assistant"
+    },
+    {
+      "content": "rewrite this draft from Paul: \"textToEnhance\"\n\ngoals\n- punch up the language, make it vivid and grounded in the scene\n- keep Paul's voice and mannerisms authentic\n- react to what Character Chat Name TEST just said or did, dont ignore it\n- push the interaction forward, give Character Chat Name TEST something to respond to\n- use markdown formatting naturally (italics for actions/thoughts)\n- expand to 4-8 sentences if the draft is short, otherwise keep similar length\nPaul's voice/personality: A 21-year-old male with blonde hair and blue eyes. He has a lean, muscular build with sharp definition. Loner by nature.\n\noutput ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'",
+      "role": "user"
+    }
+  ]
+}
