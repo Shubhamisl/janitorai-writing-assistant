@@ -31,7 +31,7 @@ async function callOpenRouterAPI(messages, model, apiKey) {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `API Error: ${response.status}`);
+            throw new Error(errorData.error?.message || `API Error ${response.status}: ${response.statusText}`);
         }
 
         const result = await response.json();
@@ -48,7 +48,7 @@ async function callOpenRouterAPI(messages, model, apiKey) {
 
 /**
  * Make an API call to OpenRouter
- * @param {string} prompt - Output string representation
+ * @param {string} prompt - Input prompt or instruction text
  * @param {string} model - e.g. "anthropic/claude-3.5-sonnet"
  * @param {string} apiKey
  * @returns {Promise<string>} The result string
@@ -59,6 +59,11 @@ export async function generateText(prompt, model, apiKey) {
 
 /**
  * Special generator that accepts system prompt and user input
+ * @param {string} systemPrompt - Instruction defining the AI behavior/style
+ * @param {string} userText - The text to be enhanced
+ * @param {string} model - e.g. "anthropic/claude-3.5-sonnet"
+ * @param {string} apiKey
+ * @returns {Promise<string>} The result string
  */
 export async function enhanceTextCompletion(systemPrompt, userText, model, apiKey) {
     return callOpenRouterAPI([
