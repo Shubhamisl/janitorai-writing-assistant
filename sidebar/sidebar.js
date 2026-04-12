@@ -11,7 +11,6 @@ const elements = {
     outputText: document.getElementById('output-text'),
     applyBtn: document.getElementById('apply-btn'),
     copyBtn: document.getElementById('copy-btn'),
-    errorBox: document.getElementById('error-message'),
     modelDisplay: document.getElementById('model-display'),
     // Settings footer
     settingsToggle: document.getElementById('settings-toggle'),
@@ -19,7 +18,12 @@ const elements = {
     settingsApiKey: document.getElementById('settings-api-key'),
     settingsModelId: document.getElementById('settings-model-id'),
     settingsSaveBtn: document.getElementById('settings-save-btn'),
-    settingsStatus: document.getElementById('settings-status')
+    // Alert modal
+    alertModal: document.getElementById('alert-modal'),
+    alertTitle: document.getElementById('alert-title'),
+    alertMessage: document.getElementById('alert-message'),
+    alertCloseBtn: document.getElementById('alert-close-btn'),
+    alertOkBtn: document.getElementById('alert-ok-btn')
 };
 
 // ---------------------------------------------------------------------------
@@ -71,13 +75,7 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
 });
 
 function showSettingsStatus(msg, isSuccess) {
-    elements.settingsStatus.textContent = msg;
-    elements.settingsStatus.className = `settings-status ${isSuccess ? 'success' : 'error'}`;
-    clearTimeout(elements.settingsStatus._timer);
-    elements.settingsStatus._timer = setTimeout(() => {
-        elements.settingsStatus.textContent = '';
-        elements.settingsStatus.className = 'settings-status';
-    }, 2500);
+    showAlert(msg, isSuccess ? 'success' : 'error', isSuccess ? 'Success' : 'Settings Error');
 }
 
 // ---------------------------------------------------------------------------
@@ -300,10 +298,33 @@ function setPlaceholder(container, text) {
 }
 
 function showError(msg) {
-    elements.errorBox.textContent = msg;
-    elements.errorBox.classList.remove('hidden');
+    showAlert(msg, 'error', 'Error');
 }
 
 function hideError() {
-    elements.errorBox.classList.add('hidden');
+    hideAlert();
 }
+
+// ---------------------------------------------------------------------------
+// Alert Modal
+// ---------------------------------------------------------------------------
+function showAlert(msg, type = 'error', title = 'Alert') {
+    elements.alertMessage.textContent = msg;
+    elements.alertTitle.textContent = title;
+
+    elements.alertTitle.className = ''; // reset
+    if (type === 'error') {
+        elements.alertTitle.classList.add('modal-title-error');
+    } else if (type === 'success') {
+        elements.alertTitle.classList.add('modal-title-success');
+    }
+
+    elements.alertModal.classList.remove('hidden');
+}
+
+function hideAlert() {
+    elements.alertModal.classList.add('hidden');
+}
+
+elements.alertCloseBtn.addEventListener('click', hideAlert);
+elements.alertOkBtn.addEventListener('click', hideAlert);
