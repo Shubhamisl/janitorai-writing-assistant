@@ -18,12 +18,10 @@ const elements = {
     settingsApiKey: document.getElementById('settings-api-key'),
     settingsModelId: document.getElementById('settings-model-id'),
     settingsSaveBtn: document.getElementById('settings-save-btn'),
-    // Alert modal
-    alertModal: document.getElementById('alert-modal'),
-    alertTitle: document.getElementById('alert-title'),
+    // Top alert banner
+    topAlert: document.getElementById('top-alert'),
     alertMessage: document.getElementById('alert-message'),
-    alertCloseBtn: document.getElementById('alert-close-btn'),
-    alertOkBtn: document.getElementById('alert-ok-btn')
+    alertCloseBtn: document.getElementById('alert-close-btn')
 };
 
 // ---------------------------------------------------------------------------
@@ -306,25 +304,40 @@ function hideError() {
 }
 
 // ---------------------------------------------------------------------------
-// Alert Modal
+// Alert Banner
 // ---------------------------------------------------------------------------
 function showAlert(msg, type = 'error', title = 'Alert') {
-    elements.alertMessage.textContent = msg;
-    elements.alertTitle.textContent = title;
+    // Clear any existing auto-hide timer unconditionally
+    clearTimeout(elements.topAlert._timer);
 
-    elements.alertTitle.className = ''; // reset
-    if (type === 'error') {
-        elements.alertTitle.classList.add('modal-title-error');
-    } else if (type === 'success') {
-        elements.alertTitle.classList.add('modal-title-success');
+    // Securely set the message content using DOM APIs to prevent XSS
+    elements.alertMessage.replaceChildren();
+    if (title) {
+        const strong = document.createElement('strong');
+        strong.textContent = `${title}!`;
+        elements.alertMessage.appendChild(strong);
+        elements.alertMessage.appendChild(document.createTextNode(` ${msg}`));
+    } else {
+        elements.alertMessage.textContent = msg;
     }
 
-    elements.alertModal.classList.remove('hidden');
+    elements.topAlert.className = 'top-alert'; // reset classes
+    if (type === 'error') {
+        elements.topAlert.classList.add('error');
+    } else if (type === 'success') {
+        elements.topAlert.classList.add('success');
+    }
+
+    elements.topAlert.classList.remove('hidden');
+
+    // Auto-hide after 5 seconds if not an error
+    if (type === 'success') {
+        elements.topAlert._timer = setTimeout(hideAlert, 5000);
+    }
 }
 
 function hideAlert() {
-    elements.alertModal.classList.add('hidden');
+    elements.topAlert.classList.add('hidden');
 }
 
 elements.alertCloseBtn.addEventListener('click', hideAlert);
-elements.alertOkBtn.addEventListener('click', hideAlert);

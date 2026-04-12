@@ -14,6 +14,11 @@
 
 <body>
   <div class="container">
+    <div id="top-alert" class="top-alert hidden">
+      <div id="alert-message" class="top-alert-message"></div>
+      <button id="alert-close-btn" class="top-alert-close">&times;</button>
+    </div>
+
     <header>
       <h2>Writing Assistant</h2>
       <div class="status-indicator online" title="Ready"></div>
@@ -90,21 +95,6 @@
     </div>
   </div>
 
-  <!-- Alert Modal Overlay -->
-  <div id="alert-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="alert-title">Alert</h3>
-        <button id="alert-close-btn" class="modal-close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p id="alert-message"></p>
-      </div>
-      <div class="modal-footer">
-        <button id="alert-ok-btn" class="primary-btn">OK</button>
-      </div>
-    </div>
-  </div>
 </body>
 
 </html>
