@@ -265,28 +265,94 @@ elements.copyBtn.addEventListener('click', () => {
 // Helpers
 // ---------------------------------------------------------------------------
 async function getActiveTab() {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-    const tab = tabs[0];
-    if (!tab) return null;
+    try {
+        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+        const tab = tabs[0];
+        if (!tab) return null;
 
-    let isValidUrl = false;
-    if (tab.url) {
-        try {
-            const urlObj = new URL(tab.url);
-            const hostname = urlObj.hostname;
-            if (hostname === 'janitorai.com' || hostname.endsWith('.janitorai.com')) {
-                isValidUrl = true;
+        let isValidUrl = false;
+        if (tab.url) {
+            try {
+                const urlObj = new URL(tab.url);
+                const hostname = urlObj.hostname;
+                if (hostname === 'janitorai.com' || hostname.endsWith('.janitorai.com')) {
+                    isValidUrl = true;
+                }
+            } catch (e) {
+                // Ignore invalid URLs
             }
-        } catch (e) {
-            // Ignore invalid URLs
         }
-    }
 
-    if (!isValidUrl) {
-        throw new Error('Please switch to a JanitorAI tab first.');
+        return isValidUrl ? tab : null;
+    } catch (err) {
+        console.error('Error getting active tab:', err);
+        return null;
     }
-    return tab;
 }
+
+/**
+ * Checks if the user is currently on a JanitorAI tab and updates the UI state.
+ */
+async function checkCurrentContext() {
+    const tab = await getActiveTab();
+    const isOnline = !!tab;
+
+    updateUIContext(isOnline);
+
+    if (isOnline) {
+        // If we just navigated back to JanitorAI, try to fetch history to be ready
+        // But don't block the UI
+        fetchHistory().catch(() => {});
+    }
+}
+
+function updateUIContext(isOnline) {
+    const statusIndicator = document.querySelector('.status-indicator');
+    const outOfContextNote = document.getElementById('out-of-context-note');
+    const suggestionsSection = document.querySelector('.suggestions-section');
+    const controlsSection = document.querySelector('.controls-section');
+
+    if (isOnline) {
+        statusIndicator.classList.remove('offline');
+        statusIndicator.classList.add('online');
+        statusIndicator.title = 'Ready';
+        outOfContextNote.classList.add('hidden');
+        suggestionsSection.classList.remove('dimmed');
+        controlsSection.classList.remove('dimmed');
+
+        elements.enhanceBtn.disabled = false;
+        elements.suggestBtn.disabled = false;
+        elements.applyBtn.disabled = false;
+    } else {
+        statusIndicator.classList.remove('online');
+        statusIndicator.classList.add('offline');
+        statusIndicator.title = 'Waiting for JanitorAI';
+        outOfContextNote.classList.remove('hidden');
+        suggestionsSection.classList.add('dimmed');
+        controlsSection.classList.add('dimmed');
+
+        elements.enhanceBtn.disabled = true;
+        elements.suggestBtn.disabled = true;
+        elements.applyBtn.disabled = true;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Event Listeners for Tab Switching
+// ---------------------------------------------------------------------------
+
+// Detect when the user switches to a different tab
+browser.tabs.onActivated.addListener(checkCurrentContext);
+
+// Detect when the URL of the current tab changes (e.g. navigation within JanitorAI or away)
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' || changeInfo.url) {
+        checkCurrentContext();
+    }
+});
+
+// Initial check on load
+checkCurrentContext();
 
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;

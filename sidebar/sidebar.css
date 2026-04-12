@@ -5,32 +5,37 @@
 
 :root {
   /* JanitorAI UI Colors */
-  --bg-primary: #313338;    /* grey-550 */
-  --bg-secondary: #2a2b2e;  /* grey-600 */
-  --bg-dark: #1c1c1e;       /* grey-900 */
+  --bg-primary: #313338;
+  /* grey-550 */
+  --bg-secondary: #2a2b2e;
+  /* grey-600 */
+  --bg-dark: #1c1c1e;
+  /* grey-900 */
   --bg-input: #1f1f2e;
-  
-  --accent-pink: #f786f4;   /* pink-500 */
-  --accent-purple: #ae99ff; /* purple-500 */
+
+  --accent-pink: #f786f4;
+  /* pink-500 */
+  --accent-purple: #ae99ff;
+  /* purple-500 */
   --accent-purple-dim: #796ab1;
-  
+
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.6);
   --text-muted: rgba(255, 255, 255, 0.4);
-  
+
   --border-primary: rgba(255, 255, 255, 0.1);
   --border-active: var(--accent-pink);
-  
+
   --success: #38A169;
   --error: #EF4444;
-  
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-  
+
   --font-body: 'Poppins', sans-serif;
   --font-display: 'Jura', sans-serif;
-  
+
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
   --glass: blur(10px);
 }
@@ -65,7 +70,6 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--border-primary);
   padding-bottom: 12px;
   flex-shrink: 0;
 }
@@ -96,10 +100,27 @@ header h2 {
   animation: pulse-green 2s infinite;
 }
 
+.status-indicator.offline {
+  background-color: var(--text-muted);
+  box-shadow: none;
+  animation: none;
+}
+
 @keyframes pulse-green {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(55, 255, 0, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(55, 255, 0, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(55, 255, 0, 0); }
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(55, 255, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(55, 255, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(55, 255, 0, 0);
+  }
 }
 
 /* Common Elements */
@@ -114,7 +135,9 @@ label {
   letter-spacing: 0.05em;
 }
 
-textarea, select, input {
+textarea,
+select,
+input {
   width: 100%;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-primary);
@@ -126,7 +149,9 @@ textarea, select, input {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-textarea:focus, select:focus, input:focus {
+textarea:focus,
+select:focus,
+input:focus {
   outline: none;
   border-color: var(--accent-purple);
   box-shadow: 0 0 0 2px rgba(174, 153, 255, 0.2);
@@ -282,13 +307,16 @@ button {
   transform: translateY(0);
 }
 
-.primary-btn:disabled {
+.primary-btn:disabled,
+.secondary-btn:disabled,
+.icon-btn-small:disabled {
   background: var(--bg-secondary);
   color: var(--text-muted);
   filter: none;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  border-color: var(--border-primary);
 }
 
 .secondary-btn {
@@ -312,8 +340,15 @@ button {
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .output-header {
@@ -407,7 +442,8 @@ button {
   bottom: 100%;
   left: 0;
   right: 0;
-  background-color: rgba(42, 43, 46, 0.95); /* bg-secondary with transparency */
+  background-color: rgba(42, 43, 46, 0.95);
+  /* bg-secondary with transparency */
   backdrop-filter: var(--glass);
   -webkit-backdrop-filter: var(--glass);
   border: 1px solid var(--border-primary);
@@ -423,8 +459,15 @@ button {
 }
 
 @keyframes popUp {
-  from { opacity: 0; transform: translateY(10px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .settings-panel[hidden] {
@@ -567,6 +610,65 @@ button {
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Out of Context Status Banner */
+.out-of-context-note {
+  background: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-primary);
+  border-bottom: 1px solid var(--border-primary);
+  padding: 8px 12px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  animation: slideDownInner 0.3s ease;
+  margin: -18px -12px 12px -12px;
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+.out-of-context-note .icon {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+@keyframes slideDownInner {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.dimmed {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(0.5);
 }

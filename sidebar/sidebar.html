@@ -7,7 +7,8 @@
   <title>JanitorAI Writer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="sidebar.css">
   <script defer src="sidebar.js"></script>
 </head>
@@ -23,6 +24,11 @@
       <h2>Writing Assistant</h2>
       <div class="status-indicator online" title="Ready"></div>
     </header>
+
+    <div id="out-of-context-note" class="out-of-context-note hidden">
+      <span class="icon">📡</span>
+      <span>Switch to a JanitorAI tab to enable writing enhancements.</span>
+    </div>
 
     <div class="input-section">
       <label for="input-text">Your Draft</label>
