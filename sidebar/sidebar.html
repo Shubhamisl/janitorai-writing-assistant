@@ -29,20 +29,20 @@
     <div class="input-section">
       <div class="section-header">
         <label for="input-text">Your Draft</label>
+        <button id="suggest-btn" class="icon-btn-small" title="Get Ideas">💡 Brainstorm</button>
+      </div>
+      <div class="textarea-wrapper">
+        <textarea id="input-text" placeholder="Type here or text will appear from chat..."></textarea>
         <span id="char-count" class="char-count">0 characters</span>
       </div>
-      <textarea id="input-text" placeholder="Type here or text will appear from chat..."></textarea>
     </div>
 
     <!-- Suggestions Section -->
     <div class="suggestions-section">
-      <div class="section-header">
-        <label>Quick Suggestions</label>
-        <button id="suggest-btn" class="icon-btn-small" title="Get Ideas">💡</button>
-      </div>
+      <label>Quick Suggestions</label>
       <div id="suggestion-chips" class="chips-container">
         <!-- Chips will be injected here -->
-        <span class="placeholder-text">Click 💡 to brainstorm next moves.</span>
+        <span class="placeholder-text">Click <strong>Brainstorm</strong> above for fresh ideas.</span>
       </div>
     </div>
 

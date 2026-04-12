@@ -216,18 +216,6 @@ select {
   border-color: rgba(174, 153, 255, 0.1);
 }
 
-.char-count {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  font-family: var(--font-display);
-  font-weight: 500;
-}
-
-.suggestions-section {
-  display: flex;
-  flex-direction: column;
-}
-
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -235,20 +223,61 @@ select {
   margin-bottom: 8px;
 }
 
+.textarea-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.char-count {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-weight: 500;
+  pointer-events: none;
+  background: var(--bg-dark);
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: opacity 0.3s ease;
+}
+
+textarea:focus + .char-count {
+  color: var(--accent-purple);
+  opacity: 0.8;
+}
+
 .icon-btn-small {
   width: auto;
   border: 1px solid var(--border-primary);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+  background: var(--bg-dark);
+  color: var(--text-secondary);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
 }
 
 .icon-btn-small:hover {
   border-color: var(--accent-purple);
   background-color: rgba(174, 153, 255, 0.1);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.suggestions-section {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Chips */
