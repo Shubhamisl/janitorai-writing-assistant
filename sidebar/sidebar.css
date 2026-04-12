@@ -530,23 +530,20 @@ button {
   gap: 16px;
   box-shadow: var(--shadow-lg);
   z-index: 1000;
-  animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  
+  /* Animatable properties */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes popUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.settings-panel[hidden] {
-  display: none !important;
+.settings-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .settings-field {

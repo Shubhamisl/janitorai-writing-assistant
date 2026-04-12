@@ -85,12 +85,22 @@ browser.storage.onChanged.addListener((changes, area) => {
 // Settings footer -- collapsible toggle
 // ---------------------------------------------------------------------------
 elements.settingsToggle.addEventListener('click', () => {
-    const expanded = elements.settingsToggle.getAttribute('aria-expanded') === 'true';
-    elements.settingsToggle.setAttribute('aria-expanded', String(!expanded));
-    if (expanded) {
-        elements.settingsPanel.hidden = true;
-    } else {
-        elements.settingsPanel.hidden = false;
+    const isExpanding = elements.settingsToggle.getAttribute('aria-expanded') !== 'true';
+    elements.settingsToggle.setAttribute('aria-expanded', String(isExpanding));
+    elements.settingsPanel.classList.toggle('open', isExpanding);
+});
+
+// Close settings panel when clicking outside
+document.addEventListener('click', (e) => {
+    const isExpanded = elements.settingsToggle.getAttribute('aria-expanded') === 'true';
+    if (!isExpanded) return;
+
+    const isClickInsidePanel = elements.settingsPanel.contains(e.target);
+    const isClickOnToggle = elements.settingsToggle.contains(e.target);
+
+    if (!isClickInsidePanel && !isClickOnToggle) {
+        elements.settingsToggle.setAttribute('aria-expanded', 'false');
+        elements.settingsPanel.classList.remove('open');
     }
 });
 
