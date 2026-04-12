@@ -269,7 +269,20 @@ async function getActiveTab() {
     const tab = tabs[0];
     if (!tab) return null;
 
-    if (!tab.url || !tab.url.includes('janitorai.com')) {
+    let isValidUrl = false;
+    if (tab.url) {
+        try {
+            const urlObj = new URL(tab.url);
+            const hostname = urlObj.hostname;
+            if (hostname === 'janitorai.com' || hostname.endsWith('.janitorai.com')) {
+                isValidUrl = true;
+            }
+        } catch (e) {
+            // Ignore invalid URLs
+        }
+    }
+
+    if (!isValidUrl) {
         throw new Error('Please switch to a JanitorAI tab first.');
     }
     return tab;

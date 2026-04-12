@@ -48,7 +48,7 @@ function getChatHistory(limit = 10) {
         // Collect the text from all <p> tags inside the message body.
         const paragraphs = bodyEl.querySelectorAll('p');
         const content = Array.from(paragraphs)
-            .map(p => p.innerText.trim())
+            .map(p => p.textContent.trim())
             .filter(Boolean)
             .join('\n')
             .trim();

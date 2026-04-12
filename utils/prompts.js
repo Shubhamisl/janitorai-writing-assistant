@@ -3,6 +3,15 @@
  */
 
 /**
+ * Formats the chat history into a readable string
+ * @param {Array} history - Chat history array
+ * @returns {string} Formatted history string
+ */
+function formatHistory(history) {
+    return history.map(h => `${h.role === 'user' ? 'User' : 'Character'}: ${h.content}`).join('\n');
+}
+
+/**
  * Generates the system prompt for text enhancement based on the selected style
  * @param {string} style - The writing style (novel, casual, roleplay)
  * @param {Array} history - Optional chat history to include in context
@@ -64,7 +73,7 @@ Output ONLY the enhanced response.`;
 
     // Append History to System Prompt if available
     if (history.length > 0) {
-        const historyText = history.map(h => `${h.role === 'user' ? 'User' : 'Character'}: ${h.content}`).join('\n');
+        const historyText = formatHistory(history);
         basePrompt += `\n\n[CONTEXT - RECENT CONVERSATION]\nThe following is the recent conversation history. Use it to inform the tone, plot, and character voice.\n\n${historyText}\n\n[END CONTEXT]`;
     }
 
@@ -77,7 +86,7 @@ Output ONLY the enhanced response.`;
  * @returns {string} The formatted prompt
  */
 export function getSuggestionPrompt(history) {
-    const historyText = history.map(h => `${h.role === 'user' ? 'User' : 'Character'}: ${h.content}`).join('\n');
+    const historyText = formatHistory(history);
     return `You are a creative co-pilot. Based on the history, suggest 3 DISTINCT directions for the USER'S next response.
     
 History:
