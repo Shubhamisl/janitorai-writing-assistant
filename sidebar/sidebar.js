@@ -28,7 +28,7 @@ const elements = {
  * Updates the permanent status bar with text and icons.
  * @param {string} text 
  * @param {string} icon 
- * @param {'ready'|'working'|'offline'|'error'} state 
+ * @param {'ready'|'working'|'offline'|'error'|'success'} state 
  */
 function setStatusBar(text, icon = '✨', state = 'ready') {
     elements.statusText.textContent = text;
@@ -90,7 +90,7 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
 
 function showSettingsStatus(msg, isSuccess) {
     if (isSuccess) {
-        setStatusBar('Settings saved!', '⚙️', 'ready');
+        setStatusBar('Settings saved!', '⚙️', 'success');
         setTimeout(() => checkCurrentContext(), 3000);
     } else {
         setStatusBar(`Save failed: ${msg}`, '⚠️', 'error');
@@ -169,7 +169,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
         if (response.success) {
             elements.outputText.textContent = response.result;
             elements.outputSection.classList.remove('hidden');
-            setStatusBar('Text enhanced!', '✅', 'ready');
+            setStatusBar('Text enhanced!', '✅', 'success');
             setTimeout(() => checkCurrentContext(), 3000);
         } else {
             showError(response.error || 'Enhancement failed. Check your API key in Settings.');
@@ -212,7 +212,7 @@ elements.suggestBtn.addEventListener('click', async () => {
 
         if (response.success) {
             renderSuggestions(response.result);
-            setStatusBar('Suggestions ready', '💡', 'ready');
+            setStatusBar('Suggestions ready', '💡', 'success');
             setTimeout(() => checkCurrentContext(), 3000);
         } else {
             setPlaceholder(elements.suggestionChips, 'Error generating ideas.');
@@ -276,7 +276,7 @@ elements.applyBtn.addEventListener('click', async () => {
             type: 'applyText',
             text: text
         });
-        setStatusBar('Text applied to chat', '⏎', 'ready');
+        setStatusBar('Text applied to chat', '⏎', 'success');
         setTimeout(() => checkCurrentContext(), 3000);
     } catch (err) {
         showError(err.message);
@@ -290,7 +290,7 @@ elements.copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(elements.outputText.textContent);
     const originalText = elements.copyBtn.textContent;
     elements.copyBtn.textContent = '✅';
-    setStatusBar('Copied to clipboard', '📋', 'ready');
+    setStatusBar('Copied to clipboard', '📋', 'success');
     setTimeout(() => {
         elements.copyBtn.textContent = originalText;
         checkCurrentContext();
