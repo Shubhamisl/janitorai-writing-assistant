@@ -12,17 +12,33 @@ const elements = {
     applyBtn: document.getElementById('apply-btn'),
     copyBtn: document.getElementById('copy-btn'),
     modelDisplay: document.getElementById('model-display'),
+    // Status Bar
+    statusBar: document.getElementById('status-bar'),
+    statusIcon: document.getElementById('status-icon'),
+    statusText: document.getElementById('status-text'),
     // Settings footer
     settingsToggle: document.getElementById('settings-toggle'),
     settingsPanel: document.getElementById('settings-panel'),
     settingsApiKey: document.getElementById('settings-api-key'),
     settingsModelId: document.getElementById('settings-model-id'),
-    settingsSaveBtn: document.getElementById('settings-save-btn'),
-    // Top alert banner
-    topAlert: document.getElementById('top-alert'),
-    alertMessage: document.getElementById('alert-message'),
-    alertCloseBtn: document.getElementById('alert-close-btn')
+    settingsSaveBtn: document.getElementById('settings-save-btn')
 };
+
+/**
+ * Updates the permanent status bar with text and icons.
+ * @param {string} text 
+ * @param {string} icon 
+ * @param {'ready'|'working'|'offline'|'error'} state 
+ */
+function setStatusBar(text, icon = '✨', state = 'ready') {
+    elements.statusText.textContent = text;
+    elements.statusIcon.textContent = icon;
+
+    elements.statusBar.className = 'status-bar';
+    if (state !== 'ready') {
+        elements.statusBar.classList.add(state);
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Load preferences on start
@@ -73,7 +89,12 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
 });
 
 function showSettingsStatus(msg, isSuccess) {
-    showAlert(msg, isSuccess ? 'success' : 'error', isSuccess ? 'Success' : 'Settings Error');
+    if (isSuccess) {
+        setStatusBar('Settings saved!', '⚙️', 'ready');
+        setTimeout(() => checkCurrentContext(), 3000);
+    } else {
+        setStatusBar(`Save failed: ${msg}`, '⚠️', 'error');
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -126,7 +147,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
     if (!text) return showError('Please enter some text first.');
 
     setLoading(true);
-    hideError();
+    setStatusBar('Enhancing text...', '🪄', 'working');
 
     try {
         // Step 1: Get History from Content Script
@@ -135,8 +156,6 @@ elements.enhanceBtn.addEventListener('click', async () => {
         // Get saved model preference
         const data = await browser.storage.local.get('model');
         const modelId = data.model;
-
-        console.log(`JanitorAI Writing Assistant: Sending 'enhanceText' command for model [${modelId}]`);
 
         // Step 2: Send to Background for Enhancement
         const response = await browser.runtime.sendMessage({
@@ -150,11 +169,15 @@ elements.enhanceBtn.addEventListener('click', async () => {
         if (response.success) {
             elements.outputText.textContent = response.result;
             elements.outputSection.classList.remove('hidden');
+            setStatusBar('Text enhanced!', '✅', 'ready');
+            setTimeout(() => checkCurrentContext(), 3000);
         } else {
             showError(response.error || 'Enhancement failed. Check your API key in Settings.');
+            checkCurrentContext();
         }
     } catch (err) {
         showError(`Communication error: ${err.message}`);
+        checkCurrentContext();
     } finally {
         setLoading(false);
     }
@@ -165,14 +188,16 @@ elements.enhanceBtn.addEventListener('click', async () => {
 // ---------------------------------------------------------------------------
 elements.suggestBtn.addEventListener('click', async () => {
     setPlaceholder(elements.suggestionChips, 'Thinking...');
+    setStatusBar('Brainstorming ideas...', '🧠', 'working');
 
     try {
         // Step 1: Get History (vital for suggestions)
         const history = await fetchHistory();
 
         if (history.length === 0) {
-            console.log('JanitorAI Writing Assistant: No history found to generate suggestions off of.');
             setPlaceholder(elements.suggestionChips, 'No history found. Start chatting first!');
+            setStatusBar('No history found', '❓', 'ready');
+            setTimeout(() => checkCurrentContext(), 3000);
             return;
         }
 
@@ -187,14 +212,18 @@ elements.suggestBtn.addEventListener('click', async () => {
 
         if (response.success) {
             renderSuggestions(response.result);
+            setStatusBar('Suggestions ready', '💡', 'ready');
+            setTimeout(() => checkCurrentContext(), 3000);
         } else {
             setPlaceholder(elements.suggestionChips, 'Error generating ideas.');
             showError(response.error);
+            checkCurrentContext();
         }
 
     } catch (err) {
         setPlaceholder(elements.suggestionChips, 'Connection error.');
         showError(err.message);
+        checkCurrentContext();
     }
 });
 
@@ -228,12 +257,14 @@ function createChip(text) {
     chip.title = 'Click to use';
     chip.onclick = () => {
         elements.inputText.value = text;
+        setStatusBar('Draft updated', '📝', 'ready');
+        setTimeout(() => checkCurrentContext(), 2000);
     };
     return chip;
 }
 
 // ---------------------------------------------------------------------------
-// Apply button handler -- sends text to content script
+// Apply button handler
 // ---------------------------------------------------------------------------
 elements.applyBtn.addEventListener('click', async () => {
     try {
@@ -241,11 +272,12 @@ elements.applyBtn.addEventListener('click', async () => {
         if (!tab) return;
 
         const text = elements.outputText.textContent;
-        console.log('JanitorAI Writing Assistant: Applying enhanced text to active tab chat.');
         browser.tabs.sendMessage(tab.id, {
             type: 'applyText',
             text: text
         });
+        setStatusBar('Text applied to chat', '⏎', 'ready');
+        setTimeout(() => checkCurrentContext(), 3000);
     } catch (err) {
         showError(err.message);
     }
@@ -258,7 +290,11 @@ elements.copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(elements.outputText.textContent);
     const originalText = elements.copyBtn.textContent;
     elements.copyBtn.textContent = '✅';
-    setTimeout(() => elements.copyBtn.textContent = originalText, 2000);
+    setStatusBar('Copied to clipboard', '📋', 'ready');
+    setTimeout(() => {
+        elements.copyBtn.textContent = originalText;
+        checkCurrentContext();
+    }, 2000);
 });
 
 // ---------------------------------------------------------------------------
@@ -285,7 +321,6 @@ async function getActiveTab() {
 
         return isValidUrl ? tab : null;
     } catch (err) {
-        console.error('Error getting active tab:', err);
         return null;
     }
 }
@@ -296,44 +331,42 @@ async function getActiveTab() {
 async function checkCurrentContext() {
     const tab = await getActiveTab();
     const isOnline = !!tab;
-
     updateUIContext(isOnline);
 
     if (isOnline) {
         // If we just navigated back to JanitorAI, try to fetch history to be ready
         // But don't block the UI
-        fetchHistory().catch(() => {});
+        fetchHistory().catch(() => { });
     }
 }
 
 function updateUIContext(isOnline) {
     const statusIndicator = document.querySelector('.status-indicator');
-    const outOfContextNote = document.getElementById('out-of-context-note');
     const suggestionsSection = document.querySelector('.suggestions-section');
     const controlsSection = document.querySelector('.controls-section');
 
     if (isOnline) {
-        statusIndicator.classList.remove('offline');
-        statusIndicator.classList.add('online');
+        statusIndicator.className = 'status-indicator online';
         statusIndicator.title = 'Ready';
-        outOfContextNote.classList.add('hidden');
         suggestionsSection.classList.remove('dimmed');
         controlsSection.classList.remove('dimmed');
 
         elements.enhanceBtn.disabled = false;
         elements.suggestBtn.disabled = false;
         elements.applyBtn.disabled = false;
+
+        setStatusBar('Ready to enhance', '✨', 'ready');
     } else {
-        statusIndicator.classList.remove('online');
-        statusIndicator.classList.add('offline');
+        statusIndicator.className = 'status-indicator offline';
         statusIndicator.title = 'Waiting for JanitorAI';
-        outOfContextNote.classList.remove('hidden');
         suggestionsSection.classList.add('dimmed');
         controlsSection.classList.add('dimmed');
 
         elements.enhanceBtn.disabled = true;
         elements.suggestBtn.disabled = true;
         elements.applyBtn.disabled = true;
+
+        setStatusBar('Switch to JanitorAI tab', '📡', 'offline');
     }
 }
 
@@ -357,11 +390,9 @@ checkCurrentContext();
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;
     elements.enhanceBtn.replaceChildren();
-
     const iconSpan = document.createElement('span');
     iconSpan.className = 'icon';
     iconSpan.textContent = isLoading ? '⏳' : '✨';
-
     elements.enhanceBtn.appendChild(iconSpan);
     elements.enhanceBtn.appendChild(document.createTextNode(isLoading ? ' Enhancing...' : ' Enhance Text'));
 }
@@ -375,48 +406,5 @@ function setPlaceholder(container, text) {
 }
 
 function showError(msg) {
-    showAlert(msg, 'error', 'Error');
+    setStatusBar(`Error: ${msg}`, '⚠️', 'error');
 }
-
-function hideError() {
-    hideAlert();
-}
-
-// ---------------------------------------------------------------------------
-// Alert Banner
-// ---------------------------------------------------------------------------
-function showAlert(msg, type = 'error', title = 'Alert') {
-    // Clear any existing auto-hide timer unconditionally
-    clearTimeout(elements.topAlert._timer);
-
-    // Securely set the message content using DOM APIs to prevent XSS
-    elements.alertMessage.replaceChildren();
-    if (title) {
-        const strong = document.createElement('strong');
-        strong.textContent = `${title}!`;
-        elements.alertMessage.appendChild(strong);
-        elements.alertMessage.appendChild(document.createTextNode(` ${msg}`));
-    } else {
-        elements.alertMessage.textContent = msg;
-    }
-
-    elements.topAlert.className = 'top-alert'; // reset classes
-    if (type === 'error') {
-        elements.topAlert.classList.add('error');
-    } else if (type === 'success') {
-        elements.topAlert.classList.add('success');
-    }
-
-    elements.topAlert.classList.remove('hidden');
-
-    // Auto-hide after 5 seconds if not an error
-    if (type === 'success') {
-        elements.topAlert._timer = setTimeout(hideAlert, 5000);
-    }
-}
-
-function hideAlert() {
-    elements.topAlert.classList.add('hidden');
-}
-
-elements.alertCloseBtn.addEventListener('click', hideAlert);

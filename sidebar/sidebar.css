@@ -532,97 +532,15 @@ button {
   background: rgba(174, 153, 255, 0.4);
 }
 
-/* Top Alert Banner */
-.top-alert {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  z-index: 2000;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow-lg);
-  font-size: 0.88rem;
-  animation: slideDown 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.status-bar.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ff8182;
+  border-top-color: rgba(239, 68, 68, 0.4);
+  border-bottom-color: rgba(239, 68, 68, 0.4);
 }
 
-/* Default Warning/Alert Style */
-.top-alert {
-  background-color: rgba(69, 58, 20, 0.9);
-  color: #fcebbd;
-  border-left: 4px solid #fcebbd;
-}
-
-.top-alert.error {
-  background-color: rgba(111, 22, 29, 0.9);
-  color: #ffebe9;
-  border-left: 4px solid #ff8182;
-}
-
-.top-alert.success {
-  background-color: rgba(22, 69, 44, 0.9);
-  color: #dafbe1;
-  border-left: 4px solid #4ac26b;
-}
-
-.top-alert-message {
-  flex-grow: 1;
-  margin-right: 12px;
-  line-height: 1.5;
-}
-
-.top-alert-message strong {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-right: 6px;
-  opacity: 0.9;
-}
-
-.top-alert-close {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  color: inherit;
-  flex-shrink: 0;
-}
-
-.top-alert-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Out of Context Status Banner */
-.out-of-context-note {
+/* Permanent Status Bar */
+.status-bar {
   background: rgba(255, 255, 255, 0.05);
   border-top: 1px solid var(--border-primary);
   border-bottom: 1px solid var(--border-primary);
@@ -634,13 +552,33 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  animation: slideDownInner 0.3s ease;
   margin: -18px -12px 12px -12px;
   font-family: var(--font-display);
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.out-of-context-note .icon {
+.status-bar.offline {
+  background: rgba(239, 68, 68, 0.05);
+  color: var(--text-muted);
+}
+
+.status-bar.working {
+  background: rgba(174, 153, 255, 0.1);
+  color: var(--accent-purple);
+}
+
+.status-bar.working .icon {
+  animation: pulse-icon 1.5s infinite;
+}
+
+@keyframes pulse-icon {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.status-bar .icon {
   font-size: 0.9rem;
   opacity: 0.8;
 }
