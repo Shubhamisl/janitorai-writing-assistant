@@ -249,20 +249,22 @@ select {
   transition: all 0.2s ease;
 }
 
-.icon-btn-text:hover {
+.icon-btn-text:hover:not(:disabled) {
   color: var(--accent-purple);
   background: rgba(174, 153, 255, 0.08);
 }
 
-.icon-btn-text.hidden {
-  display: none;
+.icon-btn-text:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 #undo-btn {
   color: var(--accent-pink);
 }
 
-#undo-btn:hover {
+#undo-btn:hover:not(:disabled) {
   background: rgba(247, 134, 244, 0.08);
 }
 
@@ -289,7 +291,7 @@ select {
   transition: all 0.3s ease;
 }
 
-textarea:focus + .char-count {
+textarea:focus+.char-count {
   color: var(--accent-purple);
   opacity: 0.8;
 }
@@ -573,7 +575,7 @@ button {
   gap: 16px;
   box-shadow: var(--shadow-lg);
   z-index: 1000;
-  
+
   /* Animatable properties */
   opacity: 0;
   visibility: hidden;

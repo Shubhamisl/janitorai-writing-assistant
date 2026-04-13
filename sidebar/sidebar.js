@@ -208,7 +208,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
         if (response.success) {
             // Save original for undo
             previousDraft = elements.inputText.value;
-            elements.undoBtn.classList.remove('hidden');
+            elements.undoBtn.disabled = false;
 
             // Overwrite draft
             elements.inputText.value = response.result;
@@ -235,7 +235,7 @@ elements.undoBtn.addEventListener('click', () => {
     if (previousDraft !== undefined) {
         elements.inputText.value = previousDraft;
         updateCharCount(previousDraft.length);
-        elements.undoBtn.classList.add('hidden');
+        elements.undoBtn.disabled = true;
         setStatusBar('Enhancement undone', '↩', 'success');
         setTimeout(() => checkCurrentContext(), 2000);
     }
@@ -356,7 +356,7 @@ function createChip(text) {
         // When using a chip, we treat it like an overwrite, but maybe we shouldn't allow undo for chips?
         // User didn't ask for it specifically for suggestions, but it's consistent.
         previousDraft = elements.inputText.value;
-        elements.undoBtn.classList.remove('hidden');
+        elements.undoBtn.disabled = false;
         
         elements.inputText.value = text;
         updateCharCount(text.length);
