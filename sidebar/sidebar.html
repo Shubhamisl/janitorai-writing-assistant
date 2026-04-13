@@ -33,9 +33,9 @@
       <div class="section-header">
         <label for="input-text">Your Draft</label>
         <div class="draft-actions">
-          <button id="undo-btn" class="btn-ghost btn-ghost-pink btn-icon-only" title="Undo Enhancement" disabled>↺</button>
-          <button id="copy-draft-btn" class="btn-ghost btn-icon-only" title="Copy to Clipboard">📋</button>
-          <button id="insert-draft-btn" class="btn-ghost btn-icon-only" title="Insert to Chat">📥</button>
+          <button id="undo-btn" class="btn-ghost btn-ghost-pink btn-icon-only" title="Undo Enhancement" aria-label="Undo Enhancement" disabled>↺</button>
+          <button id="copy-draft-btn" class="btn-ghost btn-icon-only" title="Copy to Clipboard" aria-label="Copy to Clipboard">📋</button>
+          <button id="insert-draft-btn" class="btn-ghost btn-icon-only" title="Insert to Chat" aria-label="Insert to Chat">📥</button>
         </div>
       </div>
       <div class="textarea-wrapper">
@@ -68,7 +68,7 @@
     <!-- Suggestions Section -->
     <div class="suggestions-section">
       <label>Quick Suggestions</label>
-      <div id="suggestion-chips" class="chips-container">
+      <div id="suggestion-chips" class="chips-container" aria-live="polite">
         <!-- Chips will be injected here -->
         <span class="placeholder-text">Click <strong>Brainstorm</strong> above for fresh ideas.</span>
       </div>
@@ -79,8 +79,8 @@
       <div id="settings-panel" class="settings-panel">
         <div class="settings-field">
           <label for="settings-api-key">OpenRouter API Key</label>
-          <input type="password" id="settings-api-key" placeholder="sk-or-...">
-          <small class="settings-hint">Stored locally in your browser</small>
+          <input type="password" id="settings-api-key" placeholder="sk-or-..." aria-describedby="api-key-hint">
+          <small id="api-key-hint" class="settings-hint">Stored locally in your browser</small>
         </div>
         <div class="settings-field">
           <label for="settings-model-id">AI Model ID <span class="optional">(optional)</span></label>
