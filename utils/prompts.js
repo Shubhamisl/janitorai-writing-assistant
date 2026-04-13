@@ -58,27 +58,25 @@ output ONLY the raw message text. no quotes, no labels, no narrator tags, no met
 }
 
 function getSuggestTaskPrompt() {
-    return `write the next message
+    return `You are a creative co-pilot. Based on the conversation history, suggest 3 DISTINCT directions for the USER'S next response.
 
-look at the last few messages closely. what just happened? what tension or momentum exists? write a reply that:
-- directly responds to or builds on what the other character just said/did
-- moves the scene forward with a new action, question, revelation, or emotional beat
-- feels natural to your character's voice, not generic
-- aim for 4-8 sentences, a solid medium-length reply
-- uses markdown naturally (italics for actions/internal thoughts)
-- gives the other character something compelling to react to
+goals:
+- move the scene forward (new action, dialogue, or emotional beat)
+- keep suggestions concise (1-2 sentences each)
+- aim for variety: one action-oriented, one emotional/internal, and one character-specific
+- use markdown naturally (italics for actions)
 
-output ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'`;
+output strictly 3 lines, numbered 1-3. no meta commentary, no labels like 'Action:' or 'Emotional:', just the content of the suggestion.`;
 }
 
 /**
  * Generates the message array for text enhancement based on the selected style
  * @param {string} style - The writing style (novel, casual, roleplay)
+ * @param {string} draft - The draft text to rewrite
  * @param {Array} history - Chat history
  * @param {string} scenario - Optional scenario placeholder
  * @param {string} exampleDialogs - Optional example dialogs placeholder
  * @param {string} summary - Optional summary placeholder
- * @param {string} draft - The draft text to rewrite
  * @returns {Array} The formatted messages array
  */
 export function getEnhanceMessages(style, history = [], draft = "", scenario = DEFAULT_SCENARIO, exampleDialogs = DEFAULT_EXAMPLE_DIALOGS, summary = DEFAULT_SUMMARY) {
@@ -126,5 +124,3 @@ export function getSuggestMessages(history, scenario = DEFAULT_SCENARIO, example
 
     return messages;
 }
-
-
