@@ -122,9 +122,24 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
         return;
     }
 
-    await browser.storage.local.set({ apiKey, model });
-    showSettingsStatus('Saved!', true);
-    console.log('JanitorAI Writing Assistant: Saved extension settings successfully.');
+    const originalContent = elements.settingsSaveBtn.innerHTML;
+    elements.settingsSaveBtn.disabled = true;
+    elements.settingsSaveBtn.innerHTML = '<span class="icon">⏳</span> Saving...';
+
+    try {
+        await browser.storage.local.set({ apiKey, model });
+        elements.settingsSaveBtn.innerHTML = '<span class="icon">✅</span> Saved!';
+        showSettingsStatus('Saved!', true);
+        console.log('JanitorAI Writing Assistant: Saved extension settings successfully.');
+    } catch (err) {
+        elements.settingsSaveBtn.innerHTML = '<span class="icon">❌</span> Error';
+        showSettingsStatus(err.message, false);
+    } finally {
+        setTimeout(() => {
+            elements.settingsSaveBtn.disabled = false;
+            elements.settingsSaveBtn.innerHTML = originalContent;
+        }, 3000);
+    }
 });
 
 function showSettingsStatus(msg, isSuccess) {
@@ -213,7 +228,7 @@ elements.enhanceBtn.addEventListener('click', async () => {
             // Overwrite draft
             elements.inputText.value = response.result;
             updateCharCount(response.result.length);
-            
+
             setStatusBar('Text enhanced!', '✅', 'success');
             setTimeout(() => checkCurrentContext(), 3000);
         } else {
@@ -247,7 +262,7 @@ elements.undoBtn.addEventListener('click', () => {
 elements.copyDraftBtn.addEventListener('click', () => {
     const text = elements.inputText.value;
     if (!text) return;
-    
+
     navigator.clipboard.writeText(text);
     const originalContent = elements.copyDraftBtn.innerHTML;
     elements.copyDraftBtn.textContent = '✅ Copied';
@@ -358,7 +373,7 @@ function createChip(text) {
         // User didn't ask for it specifically for suggestions, but it's consistent.
         previousDraft = elements.inputText.value;
         elements.undoBtn.disabled = false;
-        
+
         elements.inputText.value = text;
         updateCharCount(text.length);
         setStatusBar('Draft updated', '📝', 'success');
@@ -435,7 +450,7 @@ checkCurrentContext();
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;
     const inputSection = document.querySelector('.input-section');
-    
+
     if (isLoading) {
         inputSection.classList.add('working-pulse');
     } else {
