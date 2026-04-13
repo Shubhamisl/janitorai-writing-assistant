@@ -1,3 +1,5 @@
+import { getActiveJanitorTab } from '../utils/browser_utils.js';
+
 // Sidebar logic
 const browser = globalThis.browser ?? globalThis.chrome;
 
@@ -134,7 +136,7 @@ function showSettingsStatus(msg, isSuccess) {
 // the extension is first opened against an already-loaded page.
 // ---------------------------------------------------------------------------
 async function fetchHistory() {
-    const tab = await getActiveTab();
+    const tab = await getActiveJanitorTab();
     if (!tab) return [];
     const tabId = tab.id;
 
@@ -300,7 +302,7 @@ function createChip(text) {
 // ---------------------------------------------------------------------------
 elements.applyBtn.addEventListener('click', async () => {
     try {
-        const tab = await getActiveTab();
+        const tab = await getActiveJanitorTab();
         if (!tab) return;
 
         const text = elements.outputText.textContent;
@@ -330,38 +332,13 @@ elements.copyBtn.addEventListener('click', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Context Management
 // ---------------------------------------------------------------------------
-async function getActiveTab() {
-    try {
-        const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-        const tab = tabs[0];
-        if (!tab) return null;
-
-        let isValidUrl = false;
-        if (tab.url) {
-            try {
-                const urlObj = new URL(tab.url);
-                const hostname = urlObj.hostname;
-                if (hostname === 'janitorai.com' || hostname.endsWith('.janitorai.com')) {
-                    isValidUrl = true;
-                }
-            } catch (e) {
-                // Ignore invalid URLs
-            }
-        }
-
-        return isValidUrl ? tab : null;
-    } catch (err) {
-        return null;
-    }
-}
-
 /**
  * Checks if the user is currently on a JanitorAI tab and updates the UI state.
  */
 async function checkCurrentContext() {
-    const tab = await getActiveTab();
+    const tab = await getActiveJanitorTab();
     const isOnline = !!tab;
     updateUIContext(isOnline);
 
