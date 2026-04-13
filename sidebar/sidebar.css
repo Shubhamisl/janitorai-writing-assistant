@@ -5,11 +5,12 @@
 
 :root {
   /* JanitorAI UI Colors - Refined */
-  --bg-primary: #121214; /* Deeper dark for better contrast */
+  --bg-primary: #121214;
+  /* Deeper dark for better contrast */
   --bg-secondary: #1c1c1e;
   --bg-dark: #0a0a0b;
   --bg-glass: rgba(49, 51, 56, 0.4);
-  
+
   --accent-pink: #f786f4;
   --accent-pink-glow: rgba(247, 134, 244, 0.4);
   --accent-purple: #ae99ff;
@@ -47,7 +48,7 @@ body {
   padding: 0;
   font-family: var(--font-body);
   background-color: var(--bg-primary);
-  background-image: 
+  background-image:
     radial-gradient(circle at 0% 0%, rgba(247, 134, 244, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 100% 100%, rgba(174, 153, 255, 0.05) 0%, transparent 50%);
   color: var(--text-primary);
@@ -249,13 +250,14 @@ select {
   gap: 6px;
 }
 
-.icon-btn-text {
+.btn-ghost {
   width: auto;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-primary);
   color: var(--text-secondary);
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: var(--radius-sm);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-family: var(--font-display);
   font-weight: 600;
   text-transform: uppercase;
@@ -263,28 +265,38 @@ select {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.icon-btn-text:hover:not(:disabled) {
-  color: var(--accent-purple);
+.btn-ghost:hover:not(:disabled) {
   background: rgba(174, 153, 255, 0.08);
+  border-color: var(--accent-purple);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
-.icon-btn-text:disabled {
+.btn-ghost:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-ghost:disabled {
   color: var(--text-muted);
   cursor: not-allowed;
   opacity: 0.5;
+  background: transparent;
+  border-color: transparent;
 }
 
-#undo-btn {
+.btn-ghost-pink {
   color: var(--accent-pink);
+  border-color: rgba(247, 134, 244, 0.15);
 }
 
-#undo-btn:hover:not(:disabled) {
+.btn-ghost-pink:hover:not(:disabled) {
   background: rgba(247, 134, 244, 0.08);
+  border-color: var(--accent-pink);
+  color: var(--text-primary);
 }
 
 .textarea-wrapper {
@@ -315,32 +327,7 @@ textarea:focus+.char-count {
   opacity: 0.8;
 }
 
-.icon-btn-small {
-  width: auto;
-  border: 1px solid var(--border-primary);
-  background: var(--bg-dark);
-  color: var(--text-secondary);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  font-family: var(--font-display);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-}
-
-.icon-btn-small:hover {
-  border-color: var(--accent-purple);
-  background-color: rgba(174, 153, 255, 0.1);
-  color: var(--text-primary);
-  transform: translateY(-1px);
-}
-
+/* Suggestions Section */
 .suggestions-section {
   display: flex;
   flex-direction: column;
@@ -361,18 +348,35 @@ textarea:focus+.char-count {
   border-radius: var(--radius-md);
   font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--text-secondary);
   line-height: 1.4;
   position: relative;
   overflow: hidden;
+  text-align: left;
+  width: 100%;
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  text-align: left;
 }
 
-.suggestion-chip:hover {
+.suggestion-chip:hover,
+.suggestion-chip:focus-visible {
   border-color: var(--accent-purple);
   color: var(--text-primary);
   background: var(--bg-secondary);
   transform: translateX(4px);
+  outline: none;
+}
+
+.suggestion-chip:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-purple-glow);
+}
+
+.suggestion-chip:active {
+  transform: translateX(2px) scale(0.98);
 }
 
 .suggestion-chip::before {
@@ -834,10 +838,12 @@ button {
     box-shadow: 0 0 0 0 rgba(174, 153, 255, 0.4);
     opacity: 0.8;
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(174, 153, 255, 0);
     opacity: 0;
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(174, 153, 255, 0);
     opacity: 0;

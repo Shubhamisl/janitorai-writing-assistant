@@ -348,8 +348,9 @@ function renderSuggestions(text) {
 }
 
 function createChip(text) {
-    const chip = document.createElement('div');
+    const chip = document.createElement('button');
     chip.className = 'suggestion-chip';
+    chip.type = 'button';
     chip.textContent = text;
     chip.title = 'Click to use';
     chip.onclick = () => {
