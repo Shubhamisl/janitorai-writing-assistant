@@ -355,7 +355,6 @@ textarea:focus+.char-count {
   line-height: 1.4;
   position: relative;
   overflow: hidden;
-  text-align: left;
   width: 100%;
   font-family: var(--font-body);
   font-weight: 400;
