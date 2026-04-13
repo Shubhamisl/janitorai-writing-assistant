@@ -1,5 +1,5 @@
-import { enhanceTextCompletion, generateText } from './utils/api.js';
-import { getEnhanceSystemPrompt, getSuggestionPrompt } from './utils/prompts.js';
+import { callAPI } from './utils/api.js';
+import { getEnhanceMessages, getSuggestMessages } from './utils/prompts.js';
 
 // Background script for handling API calls and state
 const browser = globalThis.browser ?? globalThis.chrome;
@@ -48,9 +48,9 @@ async function handleSuggestion(history, model) {
   const data = await browser.storage.local.get("apiKey");
   if (!data.apiKey) throw new Error("API Key missing");
 
-  const prompt = getSuggestionPrompt(history);
+  const messages = getSuggestMessages(history);
 
-  return generateText(prompt, model, data.apiKey);
+  return callAPI(messages, model, data.apiKey);
 }
 
 async function handleEnhancement(text, model, style, history = []) {
@@ -62,9 +62,9 @@ async function handleEnhancement(text, model, style, history = []) {
       throw new Error("API Key not found. Please set it in the extension settings.");
     }
 
-    const systemPrompt = getEnhanceSystemPrompt(style, history);
+    const messages = getEnhanceMessages(style, history, text);
 
-    return enhanceTextCompletion(systemPrompt, text, model, apiKey);
+    return callAPI(messages, model, apiKey);
 
   } catch (err) {
     console.error("Enhancement failed:", err);

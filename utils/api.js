@@ -47,27 +47,13 @@ async function callOpenRouterAPI(messages, model, apiKey) {
 }
 
 /**
- * Make an API call to OpenRouter
- * @param {string} prompt - Input prompt or instruction text
+ * Make an API call with a message array
+ * @param {Array} messages - Array of message objects
  * @param {string} model - e.g. "anthropic/claude-3.5-sonnet"
  * @param {string} apiKey
  * @returns {Promise<string>} The result string
  */
-export async function generateText(prompt, model, apiKey) {
-    return callOpenRouterAPI([{ role: "system", content: prompt }], model, apiKey);
+export async function callAPI(messages, model, apiKey) {
+    return callOpenRouterAPI(messages, model, apiKey);
 }
 
-/**
- * Special generator that accepts system prompt and user input
- * @param {string} systemPrompt - Instruction defining the AI behavior/style
- * @param {string} userText - The text to be enhanced
- * @param {string} model - e.g. "anthropic/claude-3.5-sonnet"
- * @param {string} apiKey
- * @returns {Promise<string>} The result string
- */
-export async function enhanceTextCompletion(systemPrompt, userText, model, apiKey) {
-    return callOpenRouterAPI([
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userText }
-    ], model, apiKey);
-}

@@ -2,99 +2,129 @@
  * Prompts utility for JanitorAI Writing Assistant
  */
 
-/**
- * Formats the chat history into a readable string
- * @param {Array} history - Chat history array
- * @returns {string} Formatted history string
- */
-function formatHistory(history) {
-    return history.map(h => `${h.role === 'user' ? 'User' : 'Character'}: ${h.content}`).join('\n');
+const DEFAULT_SCENARIO = "Placeholder Scenario";
+const DEFAULT_EXAMPLE_DIALOGS = "Placeholder Example Dialogs";
+const DEFAULT_SUMMARY = "Placeholder Summary";
+
+function buildSystemContent(scenario = DEFAULT_SCENARIO, exampleDialogs = DEFAULT_EXAMPLE_DIALOGS, summary = DEFAULT_SUMMARY) {
+    return `<Scenario>${scenario}</Scenario>\n<example_dialogs>${exampleDialogs}</example_dialogs>\n<summary>${summary}</summary>`;
 }
 
-/**
- * Generates the system prompt for text enhancement based on the selected style
- * @param {string} style - The writing style (novel, casual, roleplay)
- * @param {Array} history - Optional chat history to include in context
- * @returns {string} The formatted system prompt
- */
-export function getEnhanceSystemPrompt(style, history = []) {
-    let basePrompt = "";
+function convertHistoryToMessages(history) {
+    return history.map(h => ({
+        role: h.role,
+        content: h.content
+    }));
+}
 
+function getEnhanceTaskPrompt(style, draft) {
     switch (style) {
         case "novel":
-            basePrompt = `TASK: GHOSTWRITE/REWRITE the user's draft.
-ROLE: You are an expert co-writer for the User.
-INPUT: A draft snippet OR an instruction from the User's perspective.
-OUTPUT: The SAME actions/dialogue, rewritten into rich, First-Person ("I") prose.
+            return `rewrite this draft: ${draft}
 
-Guidelines:
-1. **Perspective**: STRICTLY First Person ("I", "me"). Do NOT switch to the other character's POV.
-2. **Constraint**: Do NOT reply to the text. Do NOT generate the other character's reaction. Only rewrite what the User wrote.
-3. **Instructions**: If the input is a command (e.g., "Ask her about the key"), write the narration of the User asking (e.g., "I turned to her. 'Tell me about the key,' I pressed.").
-4. **Show, Don't Tell**: Use sensory details to ground the scene.
-5. **Tone**: Sophisticated, evocative.
-6. **Context**: Use the provided history to understand the scene, but do not write *for* the history.
-Output ONLY the enhanced text.`;
-            break;
+goals
+- rewrite in rich, first-person prose
+- preserve the same actions and dialogue, just enhance quality
+- use sensory details to ground the scene
+- maintain your character's voice and perspective
+- use markdown formatting naturally (italics for actions/thoughts)
+- expand to 4-8 sentences if the draft is short, otherwise keep similar length
 
+output ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'`;
         case "casual":
-            basePrompt = `TASK: POLISH this chat message.
-ROLE: You are a text polisher.
-INPUT: A rough chat message.
-OUTPUT: The same message, phrased more naturally.
+            return `polish this message: ${draft}
 
-Guidelines:
-1. **Constraint**: Do NOT reply. Just rewrite the draft.
-2. **Tone**: Relaxed, fluid, authentic.
-3. **Clarity**: Fix awkward phrasing.
-Output ONLY the enhanced text.`;
-            break;
+goals
+- rewrite to sound more natural and fluid
+- fix any awkward phrasing
+- keep the same meaning and intent
+- maintain a casual, relaxed tone
 
+output ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'`;
         case "roleplay":
         default:
-            basePrompt = `TASK: GHOSTWRITE/REWRITE the user's roleplay turn.
-ROLE: You are the User's writing assistant.
-INPUT: A rough draft OR an instruction from the User.
-OUTPUT: The SAME actions/dialogue, rewritten to be immersive and formatted correctly.
+            return `rewrite this draft: ${draft}
 
-Guidelines:
-1. **Constraint**: Do NOT reply. Do NOT write the other character's dialogue/actions. STOP writing after the User's turn.
-2. **Instructions**: If the input is an instruction (e.g., "Kiss him", "Ask about the map"), write the generic description or dialogue for that action (e.g., *I leaned in and kissed him.* or "Where is the map?").
-3. **Formatting**: 
-   - ACTIONS must be inside *asterisks* (e.g., *She sighed.*).
-   - DIALOGUE must be inside "double quotes" (e.g., "Hello.").
-   - Do NOT combine them (e.g., *She said "Hello"* is WRONG).
-   - Correct: *She looked up.* "Hello," she said.
-4. **Expansion**: Expand emotional cues and sensory details.
-5. **Perspective**: Maintain the User's POV (usually Third Person Limited for the User's character, or First Person depending on style).
-Output ONLY the enhanced response.`;
-            break;
+goals
+- punch up the language, make it vivid and grounded in the scene
+- keep your voice and mannerisms authentic
+- react to what the other character just said or did, dont ignore it
+- push the interaction forward, give the other character something to respond to
+- use markdown formatting naturally (italics for actions/thoughts)
+- expand to 4-8 sentences if the draft is short, otherwise keep similar length
+
+output ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'`;
     }
+}
 
-    // Append History to System Prompt if available
-    if (history.length > 0) {
-        const historyText = formatHistory(history);
-        basePrompt += `\n\n[CONTEXT - RECENT CONVERSATION]\nThe following is the recent conversation history. Use it to inform the tone, plot, and character voice.\n\n${historyText}\n\n[END CONTEXT]`;
-    }
+function getSuggestTaskPrompt() {
+    return `write the next message
 
-    return basePrompt;
+look at the last few messages closely. what just happened? what tension or momentum exists? write a reply that:
+- directly responds to or builds on what the other character just said/did
+- moves the scene forward with a new action, question, revelation, or emotional beat
+- feels natural to your character's voice, not generic
+- aim for 4-8 sentences, a solid medium-length reply
+- uses markdown naturally (italics for actions/internal thoughts)
+- gives the other character something compelling to react to
+
+output ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'`;
 }
 
 /**
- * Generates the prompt for suggesting next actions
+ * Generates the message array for text enhancement based on the selected style
+ * @param {string} style - The writing style (novel, casual, roleplay)
  * @param {Array} history - Chat history
- * @returns {string} The formatted prompt
+ * @param {string} scenario - Optional scenario placeholder
+ * @param {string} exampleDialogs - Optional example dialogs placeholder
+ * @param {string} summary - Optional summary placeholder
+ * @param {string} draft - The draft text to rewrite
+ * @returns {Array} The formatted messages array
  */
-export function getSuggestionPrompt(history) {
-    const historyText = formatHistory(history);
-    return `You are a creative co-pilot. Based on the history, suggest 3 DISTINCT directions for the USER'S next response.
-    
-History:
-${historyText}
+export function getEnhanceMessages(style, history = [], draft = "", scenario = DEFAULT_SCENARIO, exampleDialogs = DEFAULT_EXAMPLE_DIALOGS, summary = DEFAULT_SUMMARY) {
+    const messages = [];
 
-Output strictly 3 lines, numbered 1-3.
-Example:
-1. [Aggressive] Draw your sword and demand answers.
-2. [Diplomatic] Try to negotiate a truce.
-3. [Flirty] Compliment their eyes.`;
+    messages.push({
+        role: "system",
+        content: buildSystemContent(scenario, exampleDialogs, summary)
+    });
+
+    const historyMessages = convertHistoryToMessages(history);
+    messages.push(...historyMessages);
+
+    messages.push({
+        role: "user",
+        content: getEnhanceTaskPrompt(style, draft)
+    });
+
+    return messages;
 }
+
+/**
+ * Generates the message array for suggesting next actions
+ * @param {Array} history - Chat history
+ * @param {string} scenario - Optional scenario placeholder
+ * @param {string} exampleDialogs - Optional example dialogs placeholder
+ * @param {string} summary - Optional summary placeholder
+ * @returns {Array} The formatted messages array
+ */
+export function getSuggestMessages(history, scenario = DEFAULT_SCENARIO, exampleDialogs = DEFAULT_EXAMPLE_DIALOGS, summary = DEFAULT_SUMMARY) {
+    const messages = [];
+
+    messages.push({
+        role: "system",
+        content: buildSystemContent(scenario, exampleDialogs, summary)
+    });
+
+    const historyMessages = convertHistoryToMessages(history);
+    messages.push(...historyMessages);
+
+    messages.push({
+        role: "user",
+        content: getSuggestTaskPrompt()
+    });
+
+    return messages;
+}
+
+
