@@ -251,7 +251,7 @@ elements.undoBtn.addEventListener('click', () => {
         elements.inputText.value = previousDraft;
         updateCharCount(previousDraft.length);
         elements.undoBtn.disabled = true;
-        setStatusBar('Enhancement undone', '↩', 'success');
+        setStatusBar('Enhancement undone', '↺', 'success');
         setTimeout(() => checkCurrentContext(), 2000);
     }
 });
@@ -265,7 +265,7 @@ elements.copyDraftBtn.addEventListener('click', () => {
 
     navigator.clipboard.writeText(text);
     const originalContent = elements.copyDraftBtn.innerHTML;
-    elements.copyDraftBtn.textContent = '✅ Copied';
+    elements.copyDraftBtn.textContent = '✅';
     setStatusBar('Copied to clipboard', '📋', 'success');
     setTimeout(() => {
         elements.copyDraftBtn.innerHTML = originalContent;
@@ -288,7 +288,7 @@ elements.insertDraftBtn.addEventListener('click', async () => {
             type: 'applyText',
             text: text
         });
-        setStatusBar('Text applied to chat', '⏎', 'success');
+        setStatusBar('Text applied to chat', '📥', 'success');
         setTimeout(() => checkCurrentContext(), 3000);
     } catch (err) {
         showError(err.message);
