@@ -433,6 +433,14 @@ checkCurrentContext();
 
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;
+    const inputSection = document.querySelector('.input-section');
+    
+    if (isLoading) {
+        inputSection.classList.add('working-pulse');
+    } else {
+        inputSection.classList.remove('working-pulse');
+    }
+
     elements.enhanceBtn.replaceChildren();
     const iconSpan = document.createElement('span');
     iconSpan.className = 'icon';

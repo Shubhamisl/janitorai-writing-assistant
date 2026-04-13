@@ -17,7 +17,10 @@
   <div class="container">
 
     <header>
-      <h2>Writing Assistant</h2>
+      <div class="brand">
+        <span class="brand-icon">🤖</span>
+        <h2>JanitorAI Writer</h2>
+      </div>
       <div class="status-indicator online" title="Ready"></div>
     </header>
 
@@ -26,14 +29,13 @@
       <span id="status-text">Ready to enhance</span>
     </div>
 
-    <div class="input-section">
+    <div class="input-section glass-card">
       <div class="section-header">
         <label for="input-text">Your Draft</label>
         <div class="draft-actions">
           <button id="undo-btn" class="icon-btn-text" title="Undo Enhancement" disabled>↩ Undo</button>
           <button id="copy-draft-btn" class="icon-btn-text" title="Copy to Clipboard">📋 Copy</button>
           <button id="insert-draft-btn" class="icon-btn-text" title="Insert to Chat">⏎ Insert</button>
-          <button id="suggest-btn" class="icon-btn-small" title="Get Ideas">💡 Brainstorm</button>
         </div>
       </div>
       <div class="textarea-wrapper">
@@ -42,17 +44,12 @@
       </div>
     </div>
 
-    <!-- Suggestions Section -->
-    <div class="suggestions-section">
-      <label>Quick Suggestions</label>
-      <div id="suggestion-chips" class="chips-container">
-        <!-- Chips will be injected here -->
-        <span class="placeholder-text">Click <strong>Brainstorm</strong> above for fresh ideas.</span>
+    <div class="controls-section glass-card">
+      <div class="section-header">
+        <label for="style-select">Enhancement Style</label>
+        <button id="suggest-btn" class="icon-btn-text" title="Get Ideas">💡 Brainstorm</button>
       </div>
-    </div>
-
-    <div class="controls-section">
-      <label for="style-select">Enhancement Style</label>
+      
       <select id="style-select">
         <option value="roleplay">🎭 Roleplay (Immersive)</option>
         <option value="novel">📖 Novel (Descriptive)</option>
@@ -66,6 +63,15 @@
       <button id="enhance-btn" class="primary-btn">
         <span class="icon">✨</span> Enhance Text
       </button>
+    </div>
+
+    <!-- Suggestions Section -->
+    <div class="suggestions-section">
+      <label>Quick Suggestions</label>
+      <div id="suggestion-chips" class="chips-container">
+        <!-- Chips will be injected here -->
+        <span class="placeholder-text">Click <strong>Brainstorm</strong> above for fresh ideas.</span>
+      </div>
     </div>
 
     <!-- Settings Footer (collapsible) -->
