@@ -29,7 +29,12 @@
     <div class="input-section">
       <div class="section-header">
         <label for="input-text">Your Draft</label>
-        <button id="suggest-btn" class="icon-btn-small" title="Get Ideas">💡 Brainstorm</button>
+        <div class="draft-actions">
+          <button id="undo-btn" class="icon-btn-text hidden" title="Undo Enhancement">↩ Undo</button>
+          <button id="copy-draft-btn" class="icon-btn-text" title="Copy to Clipboard">📋 Copy</button>
+          <button id="insert-draft-btn" class="icon-btn-text" title="Insert to Chat">⏎ Insert</button>
+          <button id="suggest-btn" class="icon-btn-small" title="Get Ideas">💡 Brainstorm</button>
+        </div>
       </div>
       <div class="textarea-wrapper">
         <textarea id="input-text" placeholder="Type here or text will appear from chat..."></textarea>
@@ -60,20 +65,6 @@
 
       <button id="enhance-btn" class="primary-btn">
         <span class="icon">✨</span> Enhance Text
-      </button>
-    </div>
-
-    <div class="output-section hidden" id="output-section">
-      <div class="output-header">
-        <label>Suggestion</label>
-        <div class="actions">
-          <button id="copy-btn" class="icon-btn" title="Copy to Clipboard">📋</button>
-        </div>
-      </div>
-      <div id="output-text" class="output-box" contenteditable="true"></div>
-
-      <button id="apply-btn" class="secondary-btn">
-        <span class="icon">⏎</span> Insert to Chat
       </button>
     </div>
 

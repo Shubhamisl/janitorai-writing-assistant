@@ -221,6 +221,49 @@ select {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  gap: 8px;
+}
+
+.draft-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn-text {
+  width: auto;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.icon-btn-text:hover {
+  color: var(--accent-purple);
+  background: rgba(174, 153, 255, 0.08);
+}
+
+.icon-btn-text.hidden {
+  display: none;
+}
+
+#undo-btn {
+  color: var(--accent-pink);
+}
+
+#undo-btn:hover {
+  background: rgba(247, 134, 244, 0.08);
 }
 
 .textarea-wrapper {

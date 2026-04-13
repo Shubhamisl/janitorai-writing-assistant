@@ -9,13 +9,13 @@ const elements = {
     enhanceBtn: document.getElementById('enhance-btn'),
     suggestBtn: document.getElementById('suggest-btn'),
     suggestionChips: document.getElementById('suggestion-chips'),
-    outputSection: document.getElementById('output-section'),
-    outputText: document.getElementById('output-text'),
-    applyBtn: document.getElementById('apply-btn'),
-    copyBtn: document.getElementById('copy-btn'),
     charCount: document.getElementById('char-count'),
     modelDisplay: document.getElementById('model-display'),
     statusIndicator: document.querySelector('.status-indicator'),
+    // Draft Actions
+    undoBtn: document.getElementById('undo-btn'),
+    copyDraftBtn: document.getElementById('copy-draft-btn'),
+    insertDraftBtn: document.getElementById('insert-draft-btn'),
     // Status Bar
     statusBar: document.getElementById('status-bar'),
     statusIcon: document.getElementById('status-icon'),
@@ -27,6 +27,9 @@ const elements = {
     settingsModelId: document.getElementById('settings-model-id'),
     settingsSaveBtn: document.getElementById('settings-save-btn')
 };
+
+// State management
+let previousDraft = '';
 
 /**
  * Updates the permanent status bar with text and icons.
@@ -69,6 +72,9 @@ browser.storage.local.get(['style', 'model', 'apiKey']).then(data => {
 // Input interaction logic
 elements.inputText.addEventListener('input', () => {
     updateCharCount(elements.inputText.value.length);
+    // If user typed, they might have manually changed what was enhanced, 
+    // but keep undo for a bit if it was recent? 
+    // For now, let's keep it until next enhancement or manual undo.
 });
 
 function updateCharCount(count) {
@@ -200,8 +206,14 @@ elements.enhanceBtn.addEventListener('click', async () => {
         });
 
         if (response.success) {
-            elements.outputText.textContent = response.result;
-            elements.outputSection.classList.remove('hidden');
+            // Save original for undo
+            previousDraft = elements.inputText.value;
+            elements.undoBtn.classList.remove('hidden');
+
+            // Overwrite draft
+            elements.inputText.value = response.result;
+            updateCharCount(response.result.length);
+            
             setStatusBar('Text enhanced!', '✅', 'success');
             setTimeout(() => checkCurrentContext(), 3000);
         } else {
@@ -213,6 +225,58 @@ elements.enhanceBtn.addEventListener('click', async () => {
         checkCurrentContext();
     } finally {
         setLoading(false);
+    }
+});
+
+// ---------------------------------------------------------------------------
+// Undo button handler
+// ---------------------------------------------------------------------------
+elements.undoBtn.addEventListener('click', () => {
+    if (previousDraft !== undefined) {
+        elements.inputText.value = previousDraft;
+        updateCharCount(previousDraft.length);
+        elements.undoBtn.classList.add('hidden');
+        setStatusBar('Enhancement undone', '↩', 'success');
+        setTimeout(() => checkCurrentContext(), 2000);
+    }
+});
+
+// ---------------------------------------------------------------------------
+// Draft Copy button handler
+// ---------------------------------------------------------------------------
+elements.copyDraftBtn.addEventListener('click', () => {
+    const text = elements.inputText.value;
+    if (!text) return;
+    
+    navigator.clipboard.writeText(text);
+    const originalContent = elements.copyDraftBtn.innerHTML;
+    elements.copyDraftBtn.textContent = '✅ Copied';
+    setStatusBar('Copied to clipboard', '📋', 'success');
+    setTimeout(() => {
+        elements.copyDraftBtn.innerHTML = originalContent;
+        checkCurrentContext();
+    }, 2000);
+});
+
+// ---------------------------------------------------------------------------
+// Draft Insert button handler
+// ---------------------------------------------------------------------------
+elements.insertDraftBtn.addEventListener('click', async () => {
+    const text = elements.inputText.value;
+    if (!text) return;
+
+    try {
+        const tab = await getActiveJanitorTab();
+        if (!tab) return;
+
+        browser.tabs.sendMessage(tab.id, {
+            type: 'applyText',
+            text: text
+        });
+        setStatusBar('Text applied to chat', '⏎', 'success');
+        setTimeout(() => checkCurrentContext(), 3000);
+    } catch (err) {
+        showError(err.message);
     }
 });
 
@@ -289,6 +353,11 @@ function createChip(text) {
     chip.textContent = text;
     chip.title = 'Click to use';
     chip.onclick = () => {
+        // When using a chip, we treat it like an overwrite, but maybe we shouldn't allow undo for chips?
+        // User didn't ask for it specifically for suggestions, but it's consistent.
+        previousDraft = elements.inputText.value;
+        elements.undoBtn.classList.remove('hidden');
+        
         elements.inputText.value = text;
         updateCharCount(text.length);
         setStatusBar('Draft updated', '📝', 'success');
@@ -296,40 +365,6 @@ function createChip(text) {
     };
     return chip;
 }
-
-// ---------------------------------------------------------------------------
-// Apply button handler
-// ---------------------------------------------------------------------------
-elements.applyBtn.addEventListener('click', async () => {
-    try {
-        const tab = await getActiveJanitorTab();
-        if (!tab) return;
-
-        const text = elements.outputText.textContent;
-        browser.tabs.sendMessage(tab.id, {
-            type: 'applyText',
-            text: text
-        });
-        setStatusBar('Text applied to chat', '⏎', 'success');
-        setTimeout(() => checkCurrentContext(), 3000);
-    } catch (err) {
-        showError(err.message);
-    }
-});
-
-// ---------------------------------------------------------------------------
-// Copy button handler
-// ---------------------------------------------------------------------------
-elements.copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(elements.outputText.textContent);
-    const originalText = elements.copyBtn.textContent;
-    elements.copyBtn.textContent = '✅';
-    setStatusBar('Copied to clipboard', '📋', 'success');
-    setTimeout(() => {
-        elements.copyBtn.textContent = originalText;
-        checkCurrentContext();
-    }, 2000);
-});
 
 // ---------------------------------------------------------------------------
 // Context Management
@@ -362,7 +397,7 @@ function updateUIContext(isOnline) {
 
         elements.enhanceBtn.disabled = false;
         elements.suggestBtn.disabled = false;
-        elements.applyBtn.disabled = false;
+        elements.insertDraftBtn.disabled = false;
 
         setStatusBar('Ready to enhance', '✨', 'ready');
     } else {
@@ -373,7 +408,7 @@ function updateUIContext(isOnline) {
 
         elements.enhanceBtn.disabled = true;
         elements.suggestBtn.disabled = true;
-        elements.applyBtn.disabled = true;
+        elements.insertDraftBtn.disabled = true;
 
         setStatusBar('Switch to JanitorAI tab', '📡', 'offline');
     }
