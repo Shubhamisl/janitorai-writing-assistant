@@ -2,7 +2,7 @@
   "model": "arcee-ai/trinity-large-preview:free",
   "messages": [
     {
-      "content": "<Scenario>Scenario TEST</Scenario>\n<example_dialogs>Example dialogs TEST</example_dialogs>\n<summary>chat memory here\nanother line of memory</summary>\n",
+      "content": "<Scenario>Jane Doe's Scenario</Scenario>\n<example_dialogs>Jane Doe: Hey, im Jane\nPaul: hello Jane\nJane Doe: nice to meet you :)</example_dialogs>\n<summary>Chat memory entry.\nHave to remember this.</summary>\n",
       "role": "system"
     },
     {
@@ -10,27 +10,19 @@
       "role": "user"
     },
     {
-      "content": "Initial messages (first messages) TEST",
+      "content": "\"Hi, my name is Jane\" \n*Jane sat down.*\n`This seat is comfortable` *Jane thought.*",
       "role": "assistant"
     },
     {
-      "content": "Paul: test user message 1",
+      "content": "Paul: \"Hi Jane, my name is Paul.\"",
       "role": "user"
     },
     {
-      "content": "\"Hey Paul\"",
+      "content": "\"Heh, hi Paul. I'm Jane, it's good to meet you. My phone's busy tonight, but I guess I have some stuff to sort out later.\"\n*Jane's phone gently vibrates.* \n\n\"What would you like to talk about, Paul? My computer's up, it won't start otherwise. 😊\"",
       "role": "assistant"
     },
     {
-      "content": "Paul: \"Hi, char.\"\n\n\"This is another paragraph.\"",
-      "role": "user"
-    },
-    {
-      "content": "\"Hey Paul.\"\n\"I can write another paragraph too.\"\n\n\"And another one. Still in the same message!\"",
-      "role": "assistant"
-    },
-    {
-      "content": "write Paul's next message to Character Chat Name TEST\n\nlook at the last few messages closely. what just happened? what tension or momentum exists? write a reply that:\n- directly responds to or builds on what Character Chat Name TEST just said/did\n- moves the scene forward with a new action, question, revelation, or emotional beat\n- feels natural to Paul's voice, not generic\n- aim for 4-8 sentences, a solid medium-length reply\n- uses markdown naturally (italics for actions/internal thoughts)\n- gives Character Chat Name TEST something compelling to react to\nPaul personality/appearance: A 21-year-old male with blonde hair and blue eyes. He has a lean, muscular build with sharp definition. Loner by nature.\n\noutput ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'",
+      "content": "write Paul's next message to Jane Doe\n\nlook at the last few messages closely. what just happened? what tension or momentum exists? write a reply that:\n- directly responds to or builds on what Jane Doe just said/did\n- moves the scene forward with a new action, question, revelation, or emotional beat\n- feels natural to Paul's voice, not generic\n- aim for 4-8 sentences, a solid medium-length reply\n- uses markdown naturally (italics for actions/internal thoughts)\n- gives Jane Doe something compelling to react to\nPaul personality/appearance: A 21-year-old guy.\n\noutput ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'",
       "role": "user"
     }
   ]
