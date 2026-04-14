@@ -29,7 +29,18 @@ const elements = {
 };
 
 // State management
-let previousDraft = '';
+let draftHistory = [];
+const MAX_HISTORY = 10;
+
+function pushToHistory() {
+    const currentVal = elements.inputText.value;
+    // Don't push duplicates (e.g. if user clicks twice without change)
+    if (draftHistory.length > 0 && draftHistory[draftHistory.length - 1] === currentVal) return;
+
+    draftHistory.push(currentVal);
+    if (draftHistory.length > MAX_HISTORY) draftHistory.shift();
+    elements.undoBtn.disabled = false;
+}
 
 /**
  * Updates the permanent status bar with text and icons.
@@ -221,9 +232,8 @@ elements.enhanceBtn.addEventListener('click', async () => {
         });
 
         if (response.success) {
-            // Save original for undo
-            previousDraft = elements.inputText.value;
-            elements.undoBtn.disabled = false;
+            // Save current state to history before overwriting
+            pushToHistory();
 
             // Overwrite draft
             elements.inputText.value = response.result;
@@ -243,15 +253,20 @@ elements.enhanceBtn.addEventListener('click', async () => {
     }
 });
 
-// ---------------------------------------------------------------------------
 // Undo button handler
 // ---------------------------------------------------------------------------
 elements.undoBtn.addEventListener('click', () => {
-    if (previousDraft !== undefined) {
-        elements.inputText.value = previousDraft;
-        updateCharCount(previousDraft.length);
-        elements.undoBtn.disabled = true;
-        setStatusBar('Enhancement undone', '↺', 'success');
+    if (draftHistory.length > 0) {
+        const lastState = draftHistory.pop();
+        elements.inputText.value = lastState;
+        updateCharCount(lastState.length);
+
+        // Keep disabled if nothing left to undo
+        if (draftHistory.length === 0) {
+            elements.undoBtn.disabled = true;
+        }
+
+        setStatusBar('Undo successful', '↺', 'success');
         setTimeout(() => checkCurrentContext(), 2000);
     }
 });
@@ -369,10 +384,8 @@ function createChip(text) {
     chip.textContent = text;
     chip.title = 'Click to use';
     chip.onclick = () => {
-        // When using a chip, we treat it like an overwrite, but maybe we shouldn't allow undo for chips?
-        // User didn't ask for it specifically for suggestions, but it's consistent.
-        previousDraft = elements.inputText.value;
-        elements.undoBtn.disabled = false;
+        // Save to history before using chip
+        pushToHistory();
 
         elements.inputText.value = text;
         updateCharCount(text.length);
