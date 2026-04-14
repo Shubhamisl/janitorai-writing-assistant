@@ -409,12 +409,7 @@ textarea:focus+.char-count {
   opacity: 1;
 }
 
-.placeholder-text {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-style: italic;
-  padding: 4px;
-}
+
 
 /* Model Display */
 .model-info {

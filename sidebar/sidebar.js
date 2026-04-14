@@ -307,7 +307,7 @@ elements.suggestBtn.addEventListener('click', async () => {
         const history = await fetchHistory();
 
         if (history.length === 0) {
-            setPlaceholder(elements.suggestionChips, 'No history found. Start chatting first!');
+            elements.suggestionChips.replaceChildren();
             setStatusBar('No history found', '❓', 'ready');
             setTimeout(() => checkCurrentContext(), 3000);
             return;
@@ -327,13 +327,13 @@ elements.suggestBtn.addEventListener('click', async () => {
             setStatusBar('Suggestions ready', '💡', 'success');
             setTimeout(() => checkCurrentContext(), 3000);
         } else {
-            setPlaceholder(elements.suggestionChips, 'Error generating ideas.');
+            elements.suggestionChips.replaceChildren();
             showError(response.error);
             checkCurrentContext();
         }
 
     } catch (err) {
-        setPlaceholder(elements.suggestionChips, 'Connection error.');
+        elements.suggestionChips.replaceChildren();
         showError(err.message);
         checkCurrentContext();
     }
@@ -465,13 +465,7 @@ function setLoading(isLoading) {
     elements.enhanceBtn.appendChild(document.createTextNode(isLoading ? ' Enhancing...' : ' Enhance Text'));
 }
 
-function setPlaceholder(container, text) {
-    container.replaceChildren();
-    const span = document.createElement('span');
-    span.className = 'placeholder-text';
-    span.textContent = text;
-    container.appendChild(span);
-}
+
 
 function showSuggestionSkeletons() {
     elements.suggestionChips.replaceChildren();
