@@ -29,21 +29,38 @@ if (!window._writerListenerRegistered) {
 // MutationObserver: watch for the chat textarea appearing so we can mark it
 // and log confirmation. Once found, we disconnect the observer to save CPU.
 // ---------------------------------------------------------------------------
-function tryConnectChatInput(obs) {
+function markChatInput() {
     const chatInput = findChatInput();
     if (chatInput && !chatInput.dataset.writerConnected) {
         console.log("JanitorAI Writing Assistant: Chat textarea detected");
         chatInput.dataset.writerConnected = 'true';
-        if (obs) obs.disconnect();
         return true;
     }
     return false;
 }
 
 // Check immediately, then fallback to observer if not yet present
-if (!tryConnectChatInput()) {
-    const observer = new MutationObserver((_mutations, obs) => {
-        tryConnectChatInput(obs);
+if (!markChatInput()) {
+    let timeoutId;
+    const observer = new MutationObserver((mutations, obs) => {
+        // Performance: only scan if nodes were actually added
+        const hasAddedNodes = mutations.some(m => m.addedNodes.length > 0);
+        if (hasAddedNodes && markChatInput()) {
+            if (timeoutId) clearTimeout(timeoutId);
+            obs.disconnect();
+        }
     });
+
     observer.observe(document.body, { childList: true, subtree: true });
+
+    // One last check after starting observation to handle race conditions
+    if (markChatInput()) {
+        observer.disconnect();
+    } else {
+        // Safety timeout: stop watching if not found after 15s
+        timeoutId = setTimeout(() => {
+            observer.disconnect();
+            console.warn("JanitorAI Writing Assistant: Chat textarea detection timed out (15s)");
+        }, 15000);
+    }
 }
