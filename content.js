@@ -41,11 +41,13 @@ function markChatInput() {
 
 // Check immediately, then fallback to observer if not yet present
 if (!markChatInput()) {
-    let timeoutId;
+    let timeoutId = undefined;
     const observer = new MutationObserver((mutations, obs) => {
         // Performance: only scan if nodes were actually added
         const hasAddedNodes = mutations.some(m => m.addedNodes.length > 0);
         if (hasAddedNodes && markChatInput()) {
+            // timeoutId may be undefined if this fires before the assignment below,
+            // but clearTimeout(undefined) is a safe no-op so this is fine.
             if (timeoutId) clearTimeout(timeoutId);
             obs.disconnect();
         }
