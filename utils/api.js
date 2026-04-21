@@ -3,13 +3,13 @@
 const API_TIMEOUT = 60000; // 60 seconds
 
 /**
- * Shared helper for making API calls to OpenRouter
+ * Make an API call with a message array to OpenRouter
  * @param {Array} messages - Array of message objects
  * @param {string} model - e.g. "anthropic/claude-3.5-sonnet"
  * @param {string} apiKey 
  * @returns {Promise<string>} The result string
  */
-async function callOpenRouterAPI(messages, model, apiKey) {
+export async function callAPI(messages, model, apiKey) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
@@ -45,15 +45,3 @@ async function callOpenRouterAPI(messages, model, apiKey) {
         clearTimeout(timeoutId);
     }
 }
-
-/**
- * Make an API call with a message array
- * @param {Array} messages - Array of message objects
- * @param {string} model - e.g. "anthropic/claude-3.5-sonnet"
- * @param {string} apiKey
- * @returns {Promise<string>} The result string
- */
-export async function callAPI(messages, model, apiKey) {
-    return callOpenRouterAPI(messages, model, apiKey);
-}
-
