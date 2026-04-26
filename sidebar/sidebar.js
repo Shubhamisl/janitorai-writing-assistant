@@ -133,22 +133,22 @@ elements.settingsSaveBtn.addEventListener('click', async () => {
         return;
     }
 
-    const originalContent = elements.settingsSaveBtn.innerHTML;
+    const originalChildren = Array.from(elements.settingsSaveBtn.childNodes).map(node => node.cloneNode(true));
     elements.settingsSaveBtn.disabled = true;
-    elements.settingsSaveBtn.innerHTML = '<span class="icon">⏳</span> Saving...';
+    updateButtonWithIcon(elements.settingsSaveBtn, '⏳', 'Saving...');
 
     try {
         await browser.storage.local.set({ apiKey, model });
-        elements.settingsSaveBtn.innerHTML = '<span class="icon">✅</span> Saved!';
+        updateButtonWithIcon(elements.settingsSaveBtn, '✅', 'Saved!');
         showSettingsStatus('Saved!', true);
         console.log('JanitorAI Writing Assistant: Saved extension settings successfully.');
     } catch (err) {
-        elements.settingsSaveBtn.innerHTML = '<span class="icon">❌</span> Error';
+        updateButtonWithIcon(elements.settingsSaveBtn, '❌', 'Error');
         showSettingsStatus(err.message, false);
     } finally {
         setTimeout(() => {
             elements.settingsSaveBtn.disabled = false;
-            elements.settingsSaveBtn.innerHTML = originalContent;
+            elements.settingsSaveBtn.replaceChildren(...originalChildren);
         }, 3000);
     }
 });
@@ -279,11 +279,11 @@ elements.copyDraftBtn.addEventListener('click', () => {
     if (!text) return;
 
     navigator.clipboard.writeText(text);
-    const originalContent = elements.copyDraftBtn.innerHTML;
+    const originalChildren = Array.from(elements.copyDraftBtn.childNodes).map(node => node.cloneNode(true));
     elements.copyDraftBtn.textContent = '✅';
     setStatusBar('Copied to clipboard', '📋', 'success');
     setTimeout(() => {
-        elements.copyDraftBtn.innerHTML = originalContent;
+        elements.copyDraftBtn.replaceChildren(...originalChildren);
         checkCurrentContext();
     }, 2000);
 });
@@ -491,4 +491,17 @@ function showSuggestionSkeletons() {
 
 function showError(msg) {
     setStatusBar(`Error: ${msg}`, '⚠️', 'error');
+}
+
+/**
+ * Safely updates a button's content with an icon and text.
+ * @param {HTMLElement} btn
+ * @param {string} icon
+ * @param {string} text
+ */
+function updateButtonWithIcon(btn, icon, text) {
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'icon';
+    iconSpan.textContent = icon;
+    btn.replaceChildren(iconSpan, document.createTextNode(` ${text}`));
 }
