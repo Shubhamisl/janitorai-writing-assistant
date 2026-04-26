@@ -176,7 +176,7 @@ async function fetchHistory() {
     try {
         const res = await browser.tabs.sendMessage(tabId, { type: 'getHistory' });
         if (res && res.history) return res.history;
-    } catch (_) {
+    } catch {
         // Content script not yet injected into this tab - fall through to inject.
     }
 
