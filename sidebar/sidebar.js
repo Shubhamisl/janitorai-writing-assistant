@@ -12,6 +12,9 @@ const elements = {
     charCount: document.getElementById('char-count'),
     modelDisplay: document.getElementById('model-display'),
     statusIndicator: document.querySelector('.status-indicator'),
+    suggestionsSection: document.querySelector('.suggestions-section'),
+    controlsSection: document.querySelector('.controls-section'),
+    inputSection: document.querySelector('.input-section'),
     // Draft Actions
     undoBtn: document.getElementById('undo-btn'),
     copyDraftBtn: document.getElementById('copy-draft-btn'),
@@ -414,15 +417,11 @@ async function checkCurrentContext() {
 }
 
 function updateUIContext(isOnline) {
-    const statusIndicator = document.querySelector('.status-indicator');
-    const suggestionsSection = document.querySelector('.suggestions-section');
-    const controlsSection = document.querySelector('.controls-section');
-
     if (isOnline) {
-        statusIndicator.className = 'status-indicator online';
-        statusIndicator.title = 'Ready';
-        suggestionsSection.classList.remove('dimmed');
-        controlsSection.classList.remove('dimmed');
+        elements.statusIndicator.className = 'status-indicator online';
+        elements.statusIndicator.title = 'Ready';
+        elements.suggestionsSection.classList.remove('dimmed');
+        elements.controlsSection.classList.remove('dimmed');
 
         elements.enhanceBtn.disabled = false;
         elements.suggestBtn.disabled = false;
@@ -430,10 +429,10 @@ function updateUIContext(isOnline) {
 
         setStatusBar('Ready to enhance', '✨', 'ready');
     } else {
-        statusIndicator.className = 'status-indicator offline';
-        statusIndicator.title = 'Waiting for JanitorAI';
-        suggestionsSection.classList.add('dimmed');
-        controlsSection.classList.add('dimmed');
+        elements.statusIndicator.className = 'status-indicator offline';
+        elements.statusIndicator.title = 'Waiting for JanitorAI';
+        elements.suggestionsSection.classList.add('dimmed');
+        elements.controlsSection.classList.add('dimmed');
 
         elements.enhanceBtn.disabled = true;
         elements.suggestBtn.disabled = true;
@@ -462,12 +461,11 @@ checkCurrentContext();
 
 function setLoading(isLoading) {
     elements.enhanceBtn.disabled = isLoading;
-    const inputSection = document.querySelector('.input-section');
 
     if (isLoading) {
-        inputSection.classList.add('working-pulse');
+        elements.inputSection.classList.add('working-pulse');
     } else {
-        inputSection.classList.remove('working-pulse');
+        elements.inputSection.classList.remove('working-pulse');
     }
 
     elements.enhanceBtn.replaceChildren();
