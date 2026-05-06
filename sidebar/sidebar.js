@@ -482,11 +482,13 @@ function setLoading(isLoading) {
 
 function showSuggestionSkeletons() {
     elements.suggestionChips.replaceChildren();
+    const fragment = document.createDocumentFragment();
     for (let i = 0; i < 3; i++) {
         const skeleton = document.createElement('div');
         skeleton.className = 'skeleton-chip';
-        elements.suggestionChips.appendChild(skeleton);
+        fragment.appendChild(skeleton);
     }
+    elements.suggestionChips.appendChild(fragment);
 }
 
 function showError(msg) {
