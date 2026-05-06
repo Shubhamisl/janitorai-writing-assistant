@@ -17,6 +17,20 @@ function convertHistoryToMessages(history) {
     }));
 }
 
+function buildBaseMessages(history, scenario, exampleDialogs, summary) {
+    const messages = [];
+
+    messages.push({
+        role: "system",
+        content: buildSystemContent(scenario, exampleDialogs, summary)
+    });
+
+    const historyMessages = convertHistoryToMessages(history);
+    messages.push(...historyMessages);
+
+    return messages;
+}
+
 function getEnhanceTaskPrompt(style, draft) {
     switch (style) {
         case "novel":
@@ -80,15 +94,7 @@ output strictly 3 lines, numbered 1-3. no meta commentary, no labels like 'Actio
  * @returns {Array} The formatted messages array
  */
 export function getEnhanceMessages(style, history = [], draft = "", scenario = DEFAULT_SCENARIO, exampleDialogs = DEFAULT_EXAMPLE_DIALOGS, summary = DEFAULT_SUMMARY) {
-    const messages = [];
-
-    messages.push({
-        role: "system",
-        content: buildSystemContent(scenario, exampleDialogs, summary)
-    });
-
-    const historyMessages = convertHistoryToMessages(history);
-    messages.push(...historyMessages);
+    const messages = buildBaseMessages(history, scenario, exampleDialogs, summary);
 
     messages.push({
         role: "user",
@@ -107,15 +113,7 @@ export function getEnhanceMessages(style, history = [], draft = "", scenario = D
  * @returns {Array} The formatted messages array
  */
 export function getSuggestMessages(history, scenario = DEFAULT_SCENARIO, exampleDialogs = DEFAULT_EXAMPLE_DIALOGS, summary = DEFAULT_SUMMARY) {
-    const messages = [];
-
-    messages.push({
-        role: "system",
-        content: buildSystemContent(scenario, exampleDialogs, summary)
-    });
-
-    const historyMessages = convertHistoryToMessages(history);
-    messages.push(...historyMessages);
+    const messages = buildBaseMessages(history, scenario, exampleDialogs, summary);
 
     messages.push({
         role: "user",
