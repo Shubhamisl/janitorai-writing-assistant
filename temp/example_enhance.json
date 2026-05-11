@@ -1,0 +1,29 @@
+{
+  "model": "arcee-ai/trinity-large-preview:free",
+  "messages": [
+    {
+      "content": "<Scenario>Jane Doe's Scenario</Scenario>\n<example_dialogs>Jane Doe: Hey, im Jane\nPaul: hello Jane\nJane Doe: nice to meet you :)</example_dialogs>\\n<summary>Chat memory entry.\\nHave to remember this.</summary>\n",
+      "role": "system"
+    },
+    {
+      "content": ".",
+      "role": "user"
+    },
+    {
+      "content": "\"Hi, my name is Jane\" \n*Jane sat down.*\n`This seat is comfortable` *Jane thought.*",
+      "role": "assistant"
+    },
+    {
+      "content": "Paul: \"Hi Jane, my name is Paul.\"",
+      "role": "user"
+    },
+    {
+      "content": "\"Heh, hi Paul. I'm Jane, it's good to meet you. My phone's busy tonight, but I guess I have some stuff to sort out later.\"\n*Jane's phone gently vibrates.* \n\n\"What would you like to talk about, Paul? My computer's up, it won't start otherwise. 😊\"",
+      "role": "assistant"
+    },
+    {
+      "content": "rewrite this draft from Paul: \"That's great!\"\n\ngoals\n- punch up the language, make it vivid and grounded in the scene\n- keep Paul's voice and mannerisms authentic\n- react to what Jane Doe just said or did, dont ignore it\n- push the interaction forward, give Jane Doe something to respond to\n- use markdown formatting naturally (italics for actions/thoughts)\n- expand to 4-8 sentences if the draft is short, otherwise keep similar length\nPaul's voice/personality: A 21-year-old guy.\n\noutput ONLY the raw message text. no quotes, no labels, no narrator tags, no meta commentary, no lead-in like 'here is'",
+      "role": "user"
+    }
+  ]
+}
